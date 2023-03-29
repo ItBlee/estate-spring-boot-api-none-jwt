@@ -1,4 +1,4 @@
-package com.itblee.bean;
+package com.itblee.model.dto;
 
 public class BuildingBean {
 	private Long id;

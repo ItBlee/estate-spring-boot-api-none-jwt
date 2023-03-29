@@ -1,4 +1,4 @@
-package com.itblee.bean;
+package com.itblee.model.response;
 
 import java.util.ArrayList;
 
