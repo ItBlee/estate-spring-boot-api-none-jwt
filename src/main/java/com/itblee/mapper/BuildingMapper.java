@@ -1,33 +1,49 @@
-package com.laptrinhjavaweb.mapper;
+package com.itblee.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.laptrinhjavaweb.model.NewModel;
+import com.itblee.entity.BuildingEntity;
+import com.itblee.model.dto.BuildingDTO;
 
-public class NewMapper implements RowMapper<NewModel> {
+public class BuildingMapper implements RowMapper<BuildingEntity> {
 
 	@Override
-	public NewModel mapRow(ResultSet resultSet) {
+	public BuildingEntity mapRow(ResultSet resultSet) {
 		try {
-			NewModel news = new NewModel();
-			news.setId(resultSet.getLong("id"));
-			news.setTitle(resultSet.getString("title"));
-			news.setContent(resultSet.getString("content"));
-			news.setCategoryId(resultSet.getLong("categoryid"));
-			news.setThumbnail(resultSet.getString("thumbnail"));
-			news.setShortDescription(resultSet.getString("shortdescription"));
-			news.setCreatedDate(resultSet.getTimestamp("createddate"));
-			news.setCreatedBy(resultSet.getString("createdby"));
-			if (resultSet.getTimestamp("modifieddate") != null) {
-				news.setModifiedDate(resultSet.getTimestamp("modifieddate"));
-			}
-			if (resultSet.getString("modifiedby") != null) {
-				news.setModifiedBy(resultSet.getString("modifiedby"));
-			}
-			return news;
+			BuildingEntity building = new BuildingEntity();
+			building.setId(resultSet.getLong("id"));
+			building.setName(resultSet.getString("name"));
+			building.setStreet(resultSet.getString("street"));
+			building.setWard(resultSet.getString("ward"));
+			return building;
 		} catch (SQLException e) {
 			return null;
 		}	
 	}
+
+	public static BuildingDTO mapDto(BuildingEntity entity) {
+		if (entity == null)
+			return null;
+		BuildingDTO dto = new BuildingDTO();
+		dto.setId(entity.getId());
+		dto.setName(entity.getName());
+		dto.setAddress(entity.getStreet() + " " + entity.getWard());
+		return dto;
+	}
+
+	public static List<BuildingDTO> mapDto(List<BuildingEntity> entities) {
+		List<BuildingDTO> list = new ArrayList<>();
+		for (BuildingEntity entity: entities) {
+			BuildingDTO dto = new BuildingDTO();
+			dto.setId(entity.getId());
+			dto.setName(entity.getName());
+			dto.setAddress(entity.getStreet() + " " + entity.getWard());
+			list.add(dto);
+		}
+		return list;
+	}
+
 }

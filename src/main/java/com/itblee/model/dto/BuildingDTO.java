@@ -1,11 +1,11 @@
 package com.itblee.model.dto;
 
-public class BuildingBean {
+public class BuildingDTO {
 	private Long id;
 	private String name;
-	private Integer floorArea;
+	private String address;
 	
-	public BuildingBean() {
+	public BuildingDTO() {
 	}
 
 	public Long getId() {
@@ -24,13 +24,11 @@ public class BuildingBean {
 		this.name = name;
 	}
 
-	public Integer getFloorArea() {
-		return floorArea;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setFloorArea(Integer floorArea) {
-		this.floorArea = floorArea;
+	public void setAddress(String address) {
+		this.address = address;
 	}
-	
-	
 }

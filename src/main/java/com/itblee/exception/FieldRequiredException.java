@@ -1,4 +1,4 @@
-package com.itblee;
+package com.itblee.exception;
 
 public class FieldRequiredException extends RuntimeException {
 

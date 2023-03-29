@@ -2,11 +2,11 @@ package com.itblee.model.response;
 
 import java.util.ArrayList;
 
-public class ErrorResponseBean {
+public class ErrorResponse {
 	private String error;
 	private ArrayList<String> details;
 	
-	public ErrorResponseBean() {
+	public ErrorResponse() {
 		super();
 	}
 
