@@ -1,6 +1,8 @@
 package com.itblee.model.dto;
 
-public class BuildingDTO extends BaseDTO {
+import java.io.Serializable;
+
+public class BuildingDTO implements Serializable {
 	private Long id;
 	private String name;
 	private String street;

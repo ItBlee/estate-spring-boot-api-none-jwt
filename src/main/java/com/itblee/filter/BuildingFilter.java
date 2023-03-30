@@ -1,7 +1,5 @@
 package com.itblee.filter;
 
-import com.itblee.model.dto.DistrictDTO;
-
 public class BuildingFilter extends BaseFilter {
 	private String name;
 	private String street;

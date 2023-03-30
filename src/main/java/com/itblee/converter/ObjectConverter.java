@@ -7,15 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ObjectConverter {
+    private final ObjectMapper mapper;
 
-    public static <K, V> K convertObject(V object, Class<K> convertTo) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    protected ObjectConverter() {
+        this.mapper = new ObjectMapper();
+        this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    }
+
+    public <T> T convertObject(Object object, Class<T> convertTo) {
         return mapper.convertValue(object, convertTo);
     }
 
-    public static <K, V> List<K> convertObject(List<V> objects, Class<K> convertTo) {
-        List<K> list = new ArrayList<>();
+    public <T, V> List<T> convertObject(List<V> objects, Class<T> convertTo) {
+        List<T> list = new ArrayList<>();
         for (V obj : objects)
             list.add(convertObject(obj, convertTo));
         return list;

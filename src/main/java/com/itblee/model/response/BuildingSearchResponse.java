@@ -1,8 +1,8 @@
 package com.itblee.model.response;
 
-import com.itblee.model.dto.BaseDTO;
+import java.io.Serializable;
 
-public class BuildingSearchResponse extends BaseDTO {
+public class BuildingSearchResponse implements Serializable {
 	private Long id;
 	private String name;
 	private String address;

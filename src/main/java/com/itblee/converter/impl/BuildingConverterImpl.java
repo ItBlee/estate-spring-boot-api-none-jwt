@@ -35,9 +35,12 @@ public class BuildingConverterImpl extends ObjectConverter implements BuildingCo
         BuildingSearchResponse searchResponse = new BuildingSearchResponse();
         searchResponse.setId(filter.getId());
         searchResponse.setName(filter.getName());
-        String address = filter.getStreet() +
-                ", " + filter.getWard() +
-                ", " + filter.getDistrict().getName();
+        String address = filter.getStreet() + ", " + filter.getWard();
+        try {
+            address = address + ", " + filter.getDistrict().getName();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         searchResponse.setAddress(address);
         return searchResponse;
     }

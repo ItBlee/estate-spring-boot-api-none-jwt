@@ -1,7 +1,6 @@
 package com.itblee.service.impl;
 
 import com.itblee.converter.BuildingConverter;
-import com.itblee.converter.ObjectConverter;
 import com.itblee.entity.BuildingEntity;
 import com.itblee.filter.BuildingFilter;
 import com.itblee.repository.BuildingRepository;
@@ -30,6 +29,21 @@ public class BuildingServiceImpl implements BuildingService {
     public List<BuildingFilter> findAll() {
         List<BuildingEntity> results = buildingRepository.findAll();
         return buildingConverter.convertToFilter(results);
+    }
+
+    @Override
+    public Long save(BuildingFilter buildingFilter) {
+        return null;
+    }
+
+    @Override
+    public void update(BuildingFilter buildingFilter) {
+
+    }
+
+    @Override
+    public void delete(Long id) {
+
     }
 
 }

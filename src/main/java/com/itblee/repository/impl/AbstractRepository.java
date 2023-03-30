@@ -12,7 +12,41 @@ import java.util.ResourceBundle;
 
 public abstract class AbstractRepository<T extends BaseEntity> implements GenericRepository<T> {
 
-	private static final ResourceBundle bundle = ResourceBundle.getBundle("Application");
+	final ResourceBundle bundle = ResourceBundle.getBundle("Application");
+
+	public void driverTest() throws ClassNotFoundException {
+		try {
+			Class.forName(bundle.getString("db.driver"));
+		} catch (ClassNotFoundException e) {
+			throw new ClassNotFoundException("Driver not found " + e.getMessage());
+		}
+	}
+
+	public Connection getConnection() throws SQLException, ClassNotFoundException {
+		driverTest();
+		String url = bundle.getString("db.url");
+		String username = bundle.getString("db.username");
+		String password = bundle.getString("db.password");
+		return DriverManager.getConnection(url, username, password);
+	}
+
+	private void setParameter(PreparedStatement statement, Object... parameters) throws SQLException {
+		for (int i = 0; i < parameters.length; i++) {
+			Object parameter = parameters[i];
+			int index = i + 1;
+			if (parameter instanceof Long) {
+				statement.setLong(index, (Long) parameter);
+			} else if (parameter instanceof String) {
+				statement.setString(index, (String) parameter);
+			} else if (parameter instanceof Integer) {
+				statement.setInt(index, (Integer) parameter);
+			} else if (parameter instanceof Timestamp) {
+				statement.setTimestamp(index, (Timestamp) parameter);
+			} else if (parameter instanceof Boolean) {
+				statement.setBoolean(index, (Boolean) parameter);
+			}
+		}
+	}
 
 	@Override
 	public List<T> query(String sql, RowConverter<T> rowMapper, Object... parameters) {
@@ -80,40 +114,6 @@ public abstract class AbstractRepository<T extends BaseEntity> implements Generi
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new RepositoryException(e);
-		}
-	}
-
-	public void driverTest() throws ClassNotFoundException {
-        try {
-            Class.forName(bundle.getString("db.driver"));
-        } catch (ClassNotFoundException e) {
-            throw new ClassNotFoundException("Driver not found " + e.getMessage());
-        }
-    }
-	
-	public Connection getConnection() throws SQLException, ClassNotFoundException {
-		driverTest();
-		String url = bundle.getString("db.url");
-		String username = bundle.getString("db.username");
-		String password = bundle.getString("db.password");
-		return DriverManager.getConnection(url, username, password);
-	}
-
-	private void setParameter(PreparedStatement statement, Object... parameters) throws SQLException {
-		for (int i = 0; i < parameters.length; i++) {
-			Object parameter = parameters[i];
-			int index = i + 1;
-			if (parameter instanceof Long) {
-				statement.setLong(index, (Long) parameter);
-			} else if (parameter instanceof String) {
-				statement.setString(index, (String) parameter);
-			} else if (parameter instanceof Integer) {
-				statement.setInt(index, (Integer) parameter);
-			} else if (parameter instanceof Timestamp) {
-				statement.setTimestamp(index, (Timestamp) parameter);
-			} else if (parameter instanceof Boolean) {
-				statement.setBoolean(index, (Boolean) parameter);
-			}
 		}
 	}
 
