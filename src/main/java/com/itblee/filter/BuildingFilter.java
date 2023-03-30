@@ -1,11 +1,12 @@
-package com.itblee.model.dto;
+package com.itblee.filter;
 
-public class BuildingDTO extends BaseDTO {
-	private Long id;
+import com.itblee.model.dto.DistrictDTO;
+
+public class BuildingFilter extends BaseFilter {
 	private String name;
 	private String street;
 	private String ward;
-	private DistrictDTO district;
+	private DistrictFilter district;
 	private String structure;
 	private Integer numberOfBasement;
 	private Integer floorArea;
@@ -28,16 +29,8 @@ public class BuildingDTO extends BaseDTO {
 	private String linkOfBuilding;
 	private String map;
 	private String image;
-	
-	public BuildingDTO() {
-	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+	public BuildingFilter() {
 	}
 
 	public String getName() {
@@ -64,11 +57,11 @@ public class BuildingDTO extends BaseDTO {
 		this.ward = ward;
 	}
 
-	public DistrictDTO getDistrict() {
+	public DistrictFilter getDistrict() {
 		return district;
 	}
 
-	public void setDistrict(DistrictDTO district) {
+	public void setDistrict(DistrictFilter district) {
 		this.district = district;
 	}
 

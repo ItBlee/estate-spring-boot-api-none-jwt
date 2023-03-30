@@ -2,6 +2,9 @@ package com.itblee.api;
 
 import java.util.List;
 
+import com.itblee.converter.BuildingConverter;
+import com.itblee.filter.BuildingFilter;
+import com.itblee.model.response.BuildingSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +25,19 @@ public class BuildingAPI {
 	@Autowired
 	private BuildingService buildingService;
 
+	@Autowired
+	private BuildingConverter buildingConverter;
+
 	@GetMapping
-	public List<BuildingDTO> getBuilding() {
-		return buildingService.findAll();
+	public List<BuildingSearchResponse> getBuilding() {
+		List<BuildingFilter> list = buildingService.findAll();
+		return buildingConverter.convertToResponse(list);
 	}
 	
 	@GetMapping("/{buildingid}")
 	public BuildingDTO getDetail(@PathVariable("buildingid") Long id) {
-		return buildingService.findOne(id);
+		BuildingFilter buildingFilter = buildingService.findOne(id);
+		return buildingConverter.convertToDto(buildingFilter);
 	}
 	
 	@PostMapping

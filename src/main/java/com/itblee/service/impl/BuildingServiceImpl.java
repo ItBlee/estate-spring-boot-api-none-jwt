@@ -1,15 +1,15 @@
 package com.itblee.service.impl;
 
-import java.util.List;
-
+import com.itblee.converter.BuildingConverter;
+import com.itblee.converter.ObjectConverter;
+import com.itblee.entity.BuildingEntity;
+import com.itblee.filter.BuildingFilter;
+import com.itblee.repository.BuildingRepository;
+import com.itblee.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.itblee.entity.BuildingEntity;
-import com.itblee.mapper.BuildingMapper;
-import com.itblee.model.dto.BuildingDTO;
-import com.itblee.repository.BuildingRepository;
-import com.itblee.service.BuildingService;
+import java.util.List;
 
 @Service
 public class BuildingServiceImpl implements BuildingService {
@@ -17,16 +17,19 @@ public class BuildingServiceImpl implements BuildingService {
     @Autowired
     private BuildingRepository buildingRepository;
 
+    @Autowired
+    private BuildingConverter buildingConverter;
+
     @Override
-    public BuildingDTO findOne(Long id) {
+    public BuildingFilter findOne(Long id) {
         BuildingEntity result = buildingRepository.findOne(id);
-        return BuildingMapper.mapDto(result);
+        return buildingConverter.convertToFilter(result);
     }
 
     @Override
-    public List<BuildingDTO> findAll() {
+    public List<BuildingFilter> findAll() {
         List<BuildingEntity> results = buildingRepository.findAll();
-        return BuildingMapper.mapDto(results);
+        return buildingConverter.convertToFilter(results);
     }
 
 }

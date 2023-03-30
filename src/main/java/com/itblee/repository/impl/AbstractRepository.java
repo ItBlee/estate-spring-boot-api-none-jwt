@@ -1,7 +1,8 @@
 package com.itblee.repository.impl;
 
+import com.itblee.entity.BaseEntity;
 import com.itblee.exception.RepositoryException;
-import com.itblee.mapper.RowMapper;
+import com.itblee.converter.RowConverter;
 import com.itblee.repository.GenericRepository;
 
 import java.sql.*;
@@ -9,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class AbstractRepository<T> implements GenericRepository<T> {
+public abstract class AbstractRepository<T extends BaseEntity> implements GenericRepository<T> {
 
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("Application");
 
 	@Override
-	public List<T> query(String sql, RowMapper<T> rowMapper, Object... parameters) {
+	public List<T> query(String sql, RowConverter<T> rowMapper, Object... parameters) {
 		List<T> results = new ArrayList<>();
 		ResultSet resultSet = null;
 		try (Connection connection = getConnection();
@@ -22,7 +23,7 @@ public class AbstractRepository<T> implements GenericRepository<T> {
 			setParameter(statement, parameters);
 			resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				results.add(rowMapper.mapRow(resultSet));
+				results.add(rowMapper.convertToEntity(resultSet));
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();

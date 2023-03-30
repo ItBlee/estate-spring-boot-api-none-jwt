@@ -1,10 +1,12 @@
 package com.itblee.service;
 
+import com.itblee.filter.BuildingFilter;
 import com.itblee.model.dto.BuildingDTO;
+import com.itblee.model.response.BuildingSearchResponse;
 
 import java.util.List;
 
 public interface BuildingService {
-    BuildingDTO findOne(Long id);
-    List<BuildingDTO> findAll();
+    BuildingFilter findOne(Long id);
+    List<BuildingFilter> findAll();
 }

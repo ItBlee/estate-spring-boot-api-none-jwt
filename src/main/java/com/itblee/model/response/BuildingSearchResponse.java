@@ -1,32 +1,36 @@
 package com.itblee.model.response;
 
-import java.util.List;
+import com.itblee.model.dto.BaseDTO;
 
-import com.itblee.model.dto.BuildingDTO;
+public class BuildingSearchResponse extends BaseDTO {
+	private Long id;
+	private String name;
+	private String address;
 
-public class BuildingSearchResponse {
-	private String message;
-	private List<BuildingDTO> results;
-	
 	public BuildingSearchResponse() {
-		super();
 	}
-	
-	public String getMessage() {
-		return message;
+
+	public Long getId() {
+		return id;
 	}
-	
-	public void setMessage(String message) {
-		this.message = message;
+
+	public void setId(Long id) {
+		this.id = id;
 	}
-	
-	public List<BuildingDTO> getResults() {
-		return results;
+
+	public String getName() {
+		return name;
 	}
-	
-	public void setResults(List<BuildingDTO> results) {
-		this.results = results;
+
+	public void setName(String name) {
+		this.name = name;
 	}
-	
-	
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
 }
