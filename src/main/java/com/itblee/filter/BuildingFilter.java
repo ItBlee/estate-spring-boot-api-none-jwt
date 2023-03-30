@@ -1,6 +1,7 @@
 package com.itblee.filter;
 
-public class BuildingFilter extends BaseFilter {
+public class BuildingFilter {
+	private Long id;
 	private String name;
 	private String street;
 	private String ward;
@@ -29,6 +30,14 @@ public class BuildingFilter extends BaseFilter {
 	private String image;
 
 	public BuildingFilter() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {

@@ -1,8 +1,7 @@
 package com.itblee.repository.impl;
 
-import com.itblee.entity.BaseEntity;
-import com.itblee.exception.RepositoryException;
 import com.itblee.converter.RowConverter;
+import com.itblee.exception.RepositoryException;
 import com.itblee.repository.GenericRepository;
 
 import java.sql.*;
@@ -10,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public abstract class AbstractRepository<T extends BaseEntity> implements GenericRepository<T> {
+public abstract class AbstractRepository<T> implements GenericRepository<T> {
 
 	final ResourceBundle bundle = ResourceBundle.getBundle("Application");
 
-	public void driverTest() throws ClassNotFoundException {
+	public void testDriver() throws ClassNotFoundException {
 		try {
 			Class.forName(bundle.getString("db.driver"));
 		} catch (ClassNotFoundException e) {
@@ -23,7 +22,7 @@ public abstract class AbstractRepository<T extends BaseEntity> implements Generi
 	}
 
 	public Connection getConnection() throws SQLException, ClassNotFoundException {
-		driverTest();
+		testDriver();
 		String url = bundle.getString("db.url");
 		String username = bundle.getString("db.username");
 		String password = bundle.getString("db.password");
@@ -42,14 +41,12 @@ public abstract class AbstractRepository<T extends BaseEntity> implements Generi
 				statement.setInt(index, (Integer) parameter);
 			} else if (parameter instanceof Timestamp) {
 				statement.setTimestamp(index, (Timestamp) parameter);
-			} else if (parameter instanceof Boolean) {
-				statement.setBoolean(index, (Boolean) parameter);
 			}
 		}
 	}
 
 	@Override
-	public List<T> query(String sql, RowConverter<T> rowMapper, Object... parameters) {
+	public List<T> query(String sql, RowConverter<T> rowConverter, Object... parameters) {
 		List<T> results = new ArrayList<>();
 		ResultSet resultSet = null;
 		try (Connection connection = getConnection();
@@ -57,7 +54,7 @@ public abstract class AbstractRepository<T extends BaseEntity> implements Generi
 			setParameter(statement, parameters);
 			resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				results.add(rowMapper.convertToEntity(resultSet));
+				results.add(rowConverter.convertRow(resultSet));
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();

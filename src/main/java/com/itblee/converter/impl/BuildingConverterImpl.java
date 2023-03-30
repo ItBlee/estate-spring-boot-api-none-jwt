@@ -17,13 +17,36 @@ import java.util.List;
 public class BuildingConverterImpl extends ObjectConverter implements BuildingConverter {
 
     @Override
-    public BuildingEntity convertToEntity(ResultSet resultSet) {
+    public BuildingEntity convertRow(ResultSet resultSet) {
         try {
             BuildingEntity building = new BuildingEntity();
             building.setId(resultSet.getLong("id"));
             building.setName(resultSet.getString("name"));
             building.setStreet(resultSet.getString("street"));
             building.setWard(resultSet.getString("ward"));
+            building.setDistrictID(resultSet.getLong("districtid"));
+            building.setStructure(resultSet.getString("structure"));
+            building.setNumberOfBasement(resultSet.getInt("numberofbasement"));
+            building.setFloorArea(resultSet.getInt("floorarea"));
+            building.setDirection(resultSet.getString("direction"));
+            building.setLevel(resultSet.getString("level"));
+            building.setRentPrice(resultSet.getInt("rentprice"));
+            building.setRentPriceDescription(resultSet.getString("rentpricedescription"));
+            building.setServiceFee(resultSet.getString("servicefee"));
+            building.setCarFee(resultSet.getString("carfee"));
+            building.setMotorbikeFee(resultSet.getString("motorbikefee"));
+            building.setOvertimeFee(resultSet.getString("overtimefee"));
+            building.setWaterFee(resultSet.getString("waterfee"));
+            building.setElectricityFee(resultSet.getString("electricityfee"));
+            building.setDeposit(resultSet.getString("deposit"));
+            building.setPayment(resultSet.getString("payment"));
+            building.setRentTime(resultSet.getString("renttime"));
+            building.setDecorationTime(resultSet.getString("decorationtime"));
+            building.setBrokerageFee(resultSet.getDouble("brokeragefee"));
+            building.setNote(resultSet.getString("note"));
+            building.setLinkOfBuilding(resultSet.getString("linkofbuilding"));
+            building.setMap(resultSet.getString("map"));
+            building.setImage(resultSet.getString("image"));
             return building;
         } catch (SQLException e) {
             return null;
