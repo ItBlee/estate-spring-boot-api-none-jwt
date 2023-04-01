@@ -1,7 +1,7 @@
 package com.itblee.converter.impl;
 
-import com.itblee.converter.BuildingConverter;
-import com.itblee.converter.ObjectConverter;
+import com.itblee.converter.BuildingMapper;
+import com.itblee.converter.ModelMapper;
 import com.itblee.entity.BuildingEntity;
 import com.itblee.filter.BuildingFilter;
 import com.itblee.model.dto.BuildingDTO;
@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BuildingConverterImpl extends ObjectConverter implements BuildingConverter {
+public class BuildingMapperImpl extends ModelMapper implements BuildingMapper {
 
     @Override
-    public BuildingEntity convertRow(ResultSet resultSet) {
+    public BuildingEntity mapRow(ResultSet resultSet) {
         try {
             BuildingEntity building = new BuildingEntity();
             building.setId(resultSet.getLong("id"));
@@ -54,55 +54,56 @@ public class BuildingConverterImpl extends ObjectConverter implements BuildingCo
     }
 
     @Override
-    public BuildingSearchResponse convertToResponse(BuildingFilter filter) {
-        BuildingSearchResponse searchResponse = new BuildingSearchResponse();
-        searchResponse.setId(filter.getId());
-        searchResponse.setName(filter.getName());
-        String address = filter.getStreet() + ", " + filter.getWard();
+    public BuildingSearchResponse mapToResponse(BuildingFilter filter) {
         try {
-            address = address + ", " + filter.getDistrict().getName();
+            BuildingSearchResponse searchResponse = new BuildingSearchResponse();
+            searchResponse.setId(filter.getId());
+            searchResponse.setName(filter.getName());
+            String address = filter.getStreet()
+                            + ", " + filter.getWard()
+                            + ", " + filter.getDistrict().getName();
+            searchResponse.setAddress(address);
+            return searchResponse;
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        searchResponse.setAddress(address);
-        return searchResponse;
+        return null;
     }
 
     @Override
-    public List<BuildingSearchResponse> convertToResponse(List<BuildingFilter> filters) {
+    public List<BuildingSearchResponse> mapToResponse(List<BuildingFilter> filters) {
         List<BuildingSearchResponse> list = new ArrayList<>();
-        for (BuildingFilter filter : filters)
-            list.add(convertToResponse(filter));
+        filters.forEach(f -> list.add(mapToResponse(f)));
         return list;
     }
 
     @Override
-    public BuildingDTO convertToDto(BuildingFilter filter) {
-        return convertObject(filter, BuildingDTO.class);
+    public BuildingDTO mapToDto(BuildingFilter filter) {
+        return convertModel(filter, BuildingDTO.class);
     }
 
     @Override
-    public List<BuildingDTO> convertToDto(List<BuildingFilter> filters) {
-        return convertObject(filters, BuildingDTO.class);
+    public List<BuildingDTO> mapToDto(List<BuildingFilter> filters) {
+        return convertModel(filters, BuildingDTO.class);
     }
 
     @Override
-    public <T> BuildingFilter convertToFilter(T o) {
-        return convertObject(o, BuildingFilter.class);
+    public <T> BuildingFilter mapToFilter(T o) {
+        return convertModel(o, BuildingFilter.class);
     }
 
     @Override
-    public <T> List<BuildingFilter> convertToFilter(List<T> os) {
-        return convertObject(os, BuildingFilter.class);
+    public <T> List<BuildingFilter> mapToFilter(List<T> os) {
+        return convertModel(os, BuildingFilter.class);
     }
 
     @Override
-    public BuildingEntity convertToEntity(BuildingFilter filter) {
-        return convertObject(filter, BuildingEntity.class);
+    public BuildingEntity mapToEntity(BuildingFilter filter) {
+        return convertModel(filter, BuildingEntity.class);
     }
 
     @Override
-    public List<BuildingEntity> convertToEntity(List<BuildingFilter> filters) {
-        return convertObject(filters, BuildingEntity.class);
+    public List<BuildingEntity> mapToEntity(List<BuildingFilter> filters) {
+        return convertModel(filters, BuildingEntity.class);
     }
 }

@@ -1,6 +1,6 @@
 package com.itblee.repository.impl;
 
-import com.itblee.converter.BuildingConverter;
+import com.itblee.converter.BuildingMapper;
 import com.itblee.entity.BuildingEntity;
 import com.itblee.repository.BuildingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.List;
 public class BuildingRepositoryImpl extends AbstractRepository<BuildingEntity> implements BuildingRepository {
 
     @Autowired
-    private BuildingConverter buildingConverter;
+    private BuildingMapper buildingConverter;
 
     @Override
     public BuildingEntity findOne(Long id) {

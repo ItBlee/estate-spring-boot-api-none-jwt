@@ -1,12 +1,11 @@
 package com.itblee.service.impl;
 
-import com.itblee.converter.BuildingConverter;
-import com.itblee.converter.DistrictConverter;
+import com.itblee.converter.BuildingMapper;
+import com.itblee.converter.DistrictMapper;
 import com.itblee.entity.BuildingEntity;
 import com.itblee.entity.DistrictEntity;
 import com.itblee.filter.BuildingFilter;
 import com.itblee.filter.DistrictFilter;
-import com.itblee.model.dto.DistrictDTO;
 import com.itblee.repository.BuildingRepository;
 import com.itblee.repository.DistrictRepository;
 import com.itblee.service.BuildingService;
@@ -26,19 +25,19 @@ public class BuildingServiceImpl implements BuildingService {
     private DistrictRepository districtRepository;
 
     @Autowired
-    private BuildingConverter buildingConverter;
+    private BuildingMapper buildingConverter;
 
     @Autowired
-    private DistrictConverter districtConverter;
+    private DistrictMapper districtConverter;
 
     @Override
     public BuildingFilter findOne(Long id) {
         BuildingEntity result = buildingRepository.findOne(id);
         if (result == null)
             return null;
-        BuildingFilter building = buildingConverter.convertToFilter(result);
+        BuildingFilter building = buildingConverter.mapToFilter(result);
         DistrictEntity districtEntity = districtRepository.findOne(result.getDistrictID());
-        DistrictFilter districtFilter = districtConverter.convertToFilter(districtEntity);
+        DistrictFilter districtFilter = districtConverter.mapToFilter(districtEntity);
         building.setDistrict(districtFilter);
         return building;
     }
@@ -48,9 +47,9 @@ public class BuildingServiceImpl implements BuildingService {
         List<BuildingFilter> list = new ArrayList<>();
         List<BuildingEntity> results = buildingRepository.findAll();
         for (BuildingEntity result : results) {
-            BuildingFilter building = buildingConverter.convertToFilter(result);
+            BuildingFilter building = buildingConverter.mapToFilter(result);
             DistrictEntity districtEntity = districtRepository.findOne(result.getDistrictID());
-            DistrictFilter districtFilter = districtConverter.convertToFilter(districtEntity);
+            DistrictFilter districtFilter = districtConverter.mapToFilter(districtEntity);
             building.setDistrict(districtFilter);
             list.add(building);
         }

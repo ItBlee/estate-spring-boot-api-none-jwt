@@ -1,6 +1,6 @@
 package com.itblee.repository.impl;
 
-import com.itblee.converter.RowConverter;
+import com.itblee.converter.RowMapper;
 import com.itblee.exception.RepositoryException;
 import com.itblee.repository.GenericRepository;
 
@@ -46,7 +46,7 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 	}
 
 	@Override
-	public List<T> query(String sql, RowConverter<T> rowConverter, Object... parameters) {
+	public List<T> query(String sql, RowMapper<T> rowConverter, Object... parameters) {
 		List<T> results = new ArrayList<>();
 		ResultSet resultSet = null;
 		try (Connection connection = getConnection();
@@ -54,7 +54,7 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 			setParameter(statement, parameters);
 			resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				results.add(rowConverter.convertRow(resultSet));
+				results.add(rowConverter.mapRow(resultSet));
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();

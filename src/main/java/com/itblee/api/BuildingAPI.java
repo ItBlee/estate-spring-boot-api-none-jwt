@@ -2,7 +2,7 @@ package com.itblee.api;
 
 import java.util.List;
 
-import com.itblee.converter.BuildingConverter;
+import com.itblee.converter.BuildingMapper;
 import com.itblee.filter.BuildingFilter;
 import com.itblee.model.response.BuildingSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +26,18 @@ public class BuildingAPI {
 	private BuildingService buildingService;
 
 	@Autowired
-	private BuildingConverter buildingConverter;
+	private BuildingMapper buildingConverter;
 
 	@GetMapping
 	public List<BuildingSearchResponse> getBuilding() {
 		List<BuildingFilter> list = buildingService.findAll();
-		return buildingConverter.convertToResponse(list);
+		return buildingConverter.mapToResponse(list);
 	}
 	
 	@GetMapping("/{buildingid}")
 	public BuildingDTO getDetail(@PathVariable("buildingid") Long id) {
 		BuildingFilter buildingFilter = buildingService.findOne(id);
-		return buildingConverter.convertToDto(buildingFilter);
+		return buildingConverter.mapToDto(buildingFilter);
 	}
 	
 	@PostMapping

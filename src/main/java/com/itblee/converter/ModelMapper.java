@@ -6,23 +6,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ObjectConverter {
+public abstract class ModelMapper {
     private final ObjectMapper mapper;
 
-    protected ObjectConverter() {
+    protected ModelMapper() {
         this.mapper = new ObjectMapper();
         this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
-    public <T> T convertObject(Object object, Class<T> convertTo) {
+    public <T> T convertModel(Object object, Class<T> convertTo) {
         return mapper.convertValue(object, convertTo);
     }
 
-    public <T, V> List<T> convertObject(List<V> objects, Class<T> convertTo) {
+    public <T, V> List<T> convertModel(List<V> objects, Class<T> convertTo) {
         List<T> list = new ArrayList<>();
-        for (V obj : objects)
-            list.add(convertObject(obj, convertTo));
+        objects.forEach(o -> list.add(convertModel(o, convertTo)));
         return list;
     }
-
 }

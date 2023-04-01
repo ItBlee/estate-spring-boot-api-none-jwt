@@ -1,6 +1,6 @@
 package com.itblee.repository.impl;
 
-import com.itblee.converter.DistrictConverter;
+import com.itblee.converter.DistrictMapper;
 import com.itblee.entity.DistrictEntity;
 import com.itblee.repository.DistrictRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.List;
 public class DistrictRepositoryImpl extends AbstractRepository<DistrictEntity> implements DistrictRepository {
 
     @Autowired
-    private DistrictConverter districtConverter;
+    private DistrictMapper districtConverter;
 
     @Override
     public DistrictEntity findOne(Long id) {
