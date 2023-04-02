@@ -1,6 +1,6 @@
 package com.itblee.repository;
 
-import com.itblee.converter.RowMapper;
+import com.itblee.mapper.RowMapper;
 
 import java.util.List;
 

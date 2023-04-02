@@ -1,10 +1,10 @@
 package com.itblee.entity;
 
-public class DistrictEntity extends BaseEntity {
-    private String name;
-    private String code;
+public abstract class CodeEntity extends BaseEntity {
+    protected String name;
+    protected String code;
 
-    public DistrictEntity() {
+    public CodeEntity() {
     }
 
     public String getName() {

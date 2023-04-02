@@ -1,8 +1,9 @@
 package com.itblee.model.dto;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class BuildingDTO implements Serializable {
+public class BuildingDTO {
 	private Long id;
 	private String name;
 	private String street;
@@ -14,6 +15,8 @@ public class BuildingDTO implements Serializable {
 	private String direction;
 	private String level;
 	private Integer rentPrice;
+	private List<RentAreaDTO> rentAreas;
+	private List<RentTypeDTO> rentTypes = new ArrayList<>();
 	private String rentPriceDescription;
 	private String serviceFee;
 	private String carFee;
@@ -30,6 +33,7 @@ public class BuildingDTO implements Serializable {
 	private String linkOfBuilding;
 	private String map;
 	private String image;
+	private List<AssignUserDTO> assignUsers = new ArrayList<>();
 	
 	public BuildingDTO() {
 	}
@@ -248,5 +252,29 @@ public class BuildingDTO implements Serializable {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public List<RentAreaDTO> getRentAreas() {
+		return rentAreas;
+	}
+
+	public void setRentAreas(List<RentAreaDTO> rentAreas) {
+		this.rentAreas = rentAreas;
+	}
+
+	public List<RentTypeDTO> getRentTypes() {
+		return rentTypes;
+	}
+
+	public void setRentTypes(List<RentTypeDTO> rentTypes) {
+		this.rentTypes = rentTypes;
+	}
+
+	public List<AssignUserDTO> getAssignUsers() {
+		return assignUsers;
+	}
+
+	public void setAssignUsers(List<AssignUserDTO> assignUsers) {
+		this.assignUsers = assignUsers;
 	}
 }

@@ -1,18 +1,14 @@
 package com.itblee.service.impl;
 
-import com.itblee.converter.BuildingMapper;
-import com.itblee.converter.DistrictMapper;
-import com.itblee.entity.BuildingEntity;
-import com.itblee.entity.DistrictEntity;
-import com.itblee.filter.BuildingFilter;
-import com.itblee.filter.DistrictFilter;
+import com.itblee.entity.Building;
+import com.itblee.mapper.BuildingMapper;
+import com.itblee.model.dto.BuildingDTO;
+import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.repository.DistrictRepository;
 import com.itblee.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,47 +18,27 @@ public class BuildingServiceImpl implements BuildingService {
     private BuildingRepository buildingRepository;
 
     @Autowired
-    private DistrictRepository districtRepository;
-
-    @Autowired
-    private BuildingMapper buildingConverter;
-
-    @Autowired
-    private DistrictMapper districtConverter;
+    private BuildingMapper buildingMapper;
 
     @Override
-    public BuildingFilter findOne(Long id) {
-        BuildingEntity result = buildingRepository.findOne(id);
-        if (result == null)
-            return null;
-        BuildingFilter building = buildingConverter.mapToFilter(result);
-        DistrictEntity districtEntity = districtRepository.findOne(result.getDistrictID());
-        DistrictFilter districtFilter = districtConverter.mapToFilter(districtEntity);
-        building.setDistrict(districtFilter);
-        return building;
+    public BuildingDTO findOne(Long id) {
+        Building building = buildingRepository.findOne(id);
+        return buildingMapper.mapToDto(building);
     }
 
     @Override
-    public List<BuildingFilter> findAll() {
-        List<BuildingFilter> list = new ArrayList<>();
-        List<BuildingEntity> results = buildingRepository.findAll();
-        for (BuildingEntity result : results) {
-            BuildingFilter building = buildingConverter.mapToFilter(result);
-            DistrictEntity districtEntity = districtRepository.findOne(result.getDistrictID());
-            DistrictFilter districtFilter = districtConverter.mapToFilter(districtEntity);
-            building.setDistrict(districtFilter);
-            list.add(building);
-        }
-        return list;
+    public List<BuildingSearchResponse> findAll() {
+        List<Building> buildings = buildingRepository.findAll();
+        return buildingMapper.mapToResponse(buildings);
     }
 
     @Override
-    public Long save(BuildingFilter buildingFilter) {
+    public Long save(BuildingDTO buildingDTO) {
         return null;
     }
 
     @Override
-    public void update(BuildingFilter buildingFilter) {
+    public void update(BuildingDTO buildingDTO) {
 
     }
 

@@ -1,7 +1,9 @@
 package com.itblee.entity;
 
+import java.util.HashSet;
+import java.util.Set;
 
-public class BuildingEntity extends BaseEntity {
+public class Building extends BaseEntity {
     private String name;
     private String street;
     private String ward;
@@ -24,12 +26,19 @@ public class BuildingEntity extends BaseEntity {
     private String rentTime;
     private String decorationTime;
     private Double brokerageFee;
+    private String managerName;
+    private String managerPhone;
     private String note;
     private String linkOfBuilding;
     private String map;
     private String image;
 
-    public BuildingEntity() {
+    private District district;
+    private Set<RentArea> rentAreas = new HashSet<>();
+    private Set<RentType> rentTypes = new HashSet<>();
+    private Set<User> assignUsers = new HashSet<>();
+
+    public Building() {
     }
 
     public String getName() {
@@ -208,6 +217,22 @@ public class BuildingEntity extends BaseEntity {
         this.brokerageFee = brokerageFee;
     }
 
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
+
+    public String getManagerPhone() {
+        return managerPhone;
+    }
+
+    public void setManagerPhone(String managerPhone) {
+        this.managerPhone = managerPhone;
+    }
+
     public String getNote() {
         return note;
     }
@@ -238,5 +263,37 @@ public class BuildingEntity extends BaseEntity {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
+    }
+
+    public Set<RentArea> getRentAreas() {
+        return rentAreas;
+    }
+
+    public void setRentAreas(Set<RentArea> rentAreas) {
+        this.rentAreas = rentAreas;
+    }
+
+    public Set<RentType> getRentTypes() {
+        return rentTypes;
+    }
+
+    public void setRentTypes(Set<RentType> rentTypes) {
+        this.rentTypes = rentTypes;
+    }
+
+    public Set<User> getAssignUsers() {
+        return assignUsers;
+    }
+
+    public void setAssignUsers(Set<User> assignUsers) {
+        this.assignUsers = assignUsers;
     }
 }
