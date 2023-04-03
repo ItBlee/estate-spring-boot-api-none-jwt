@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 
 public interface BuildingMapper extends ResultSetExtractor<List<Building>>, RowMapper<Building> {
-
 	BuildingSearchResponse toResponse(Building entity);
 	List<BuildingSearchResponse> toResponse(Collection<Building> entities);
 

@@ -2,6 +2,7 @@ package com.itblee.mapper;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itblee.model.dto.BuildingDTO;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,4 +33,5 @@ public class ModelMapper {
         objects.forEach(o -> list.add(mapModel(o, mapTo)));
         return list;
     }
+
 }

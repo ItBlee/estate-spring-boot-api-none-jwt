@@ -16,7 +16,9 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 	@Autowired
 	private Environment env;
 
-	public void testDriver() throws ClassNotFoundException {
+	private MysqlDataSource source;
+
+	private void testDriver() throws ClassNotFoundException {
 		try {
 			Class.forName(env.getProperty("db.driver"));
 		} catch (ClassNotFoundException e) {
@@ -24,9 +26,10 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 		}
 	}
 
-	private DataSource getDataSource() {
-		MysqlDataSource source = new MysqlDataSource();
-		source.setServerName(env.getProperty("db.url"));
+	private MysqlDataSource getDataSource() {
+		if (source == null)
+			source = new MysqlDataSource();
+		source.setServerName(env.getProperty("db.server"));
 		source.setPortNumber(Integer.parseInt(env.getProperty("db.port")));
 		source.setDatabaseName(env.getProperty("db.name"));
 		source.setUser(env.getProperty("db.username"));
@@ -34,12 +37,14 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 		return source;
 	}
 
-	public Connection getConnection() throws SQLException, ClassNotFoundException {
+	@Override
+	public Connection createConnection() throws SQLException, ClassNotFoundException {
 		testDriver();
 		return getDataSource().getConnection();
 	}
 
-	private void setParameter(PreparedStatement statement, Object... parameters) throws SQLException {
+	@Override
+	public void setParameter(PreparedStatement statement, Object... parameters) throws SQLException {
 		for (int i = 0; i < parameters.length; i++) {
 			Object parameter = parameters[i];
 			int index = i + 1;
@@ -56,10 +61,22 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 	}
 
 	@Override
+	public void close(AutoCloseable... obs) {
+		try {
+			for (AutoCloseable o : obs) {
+				if (o != null)
+					o.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
 	public List<T> query(String sql, ResultSetExtractor<List<T>> extractor, Object... parameters) {
 		List<T> results;
 		ResultSet resultSet = null;
-		try (Connection connection = getConnection();
+		try (Connection connection = createConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql)) {
 			setParameter(statement, parameters);
 			resultSet = statement.executeQuery();
@@ -77,7 +94,7 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 	public Long insert(String sql, Object... parameters) {
 		Long id = null;
 		ResultSet resultSet = null;
-		try (Connection connection = getConnection();
+		try (Connection connection = createConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			try {
 				connection.setAutoCommit(false);
@@ -104,7 +121,7 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 
 	@Override
 	public void update(String sql, Object... parameters) {
-		try (Connection connection = getConnection();
+		try (Connection connection = createConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql)) {
 			try {
 				connection.setAutoCommit(false);
@@ -119,17 +136,6 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new RepositoryException(e);
-		}
-	}
-
-	private void close(AutoCloseable... obs) {
-		try {
-			for (AutoCloseable o : obs) {
-				if (o != null)
-					o.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 

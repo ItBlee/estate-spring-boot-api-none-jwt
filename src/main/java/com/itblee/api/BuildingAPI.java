@@ -1,5 +1,6 @@
 package com.itblee.api;
 
+import com.itblee.exception.NoContentException;
 import com.itblee.model.dto.BuildingDTO;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.service.BuildingService;
@@ -17,12 +18,20 @@ public class BuildingAPI {
 
 	@GetMapping
 	public List<BuildingSearchResponse> getBuilding() {
-		return buildingService.findAll();
+		List<BuildingSearchResponse> responses = buildingService.findAll();
+		if (responses.isEmpty()) {
+			throw new NoContentException();
+		}
+		return responses;
 	}
 	
 	@GetMapping("/{buildingid}")
 	public BuildingDTO getDetail(@PathVariable("buildingid") Long id) {
-		return buildingService.findOne(id);
+		BuildingDTO dto = buildingService.findOne(id);
+		if (dto == null) {
+			throw new NoContentException();
+		}
+		return dto;
 	}
 	
 	@PostMapping

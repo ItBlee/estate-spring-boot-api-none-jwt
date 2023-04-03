@@ -1,5 +1,7 @@
 package com.itblee.utils;
 
+import com.mysql.cj.util.StringUtils;
+
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -8,12 +10,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ValidatorUtil {
+
     public static boolean isValidUsername(String username) {
-        return username != null && !username.isBlank() && !username.contains(" ");
+        return username != null && !StringUtils.isEmptyOrWhitespaceOnly(username) && !username.contains(" ");
     }
 
     public static boolean isValidPassword(String password) {
-        return password != null && !password.isBlank() && !password.contains(" ");
+        return password != null && !StringUtils.isEmptyOrWhitespaceOnly(password) && !password.contains(" ");
     }
 
     public static boolean isValidName(String name) {

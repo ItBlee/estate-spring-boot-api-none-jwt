@@ -1,5 +1,6 @@
 package com.itblee.advisor;
 
+import com.itblee.exception.NoContentException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -25,5 +26,12 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 		ErrorResponse body = new ErrorResponse();
 		body.setError(ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoContentException.class)
+    public ResponseEntity<ErrorResponse> handleNoContentException(NoContentException ex, WebRequest request) {
+        ErrorResponse body = new ErrorResponse();
+        body.setError(ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.NO_CONTENT);
     }
 }

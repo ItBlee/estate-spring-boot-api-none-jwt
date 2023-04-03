@@ -111,6 +111,8 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
 
     @Override
     public BuildingSearchResponse toResponse(Building entity) {
+        if (entity == null)
+            return null;
         BuildingSearchResponse response = convert(entity, BuildingSearchResponse.class);
         List<AssignUserDTO> assignUserDTOS = convert(entity.getAssignUsers(), AssignUserDTO.class);
         response.setAssignUsers(assignUserDTOS);
@@ -130,6 +132,8 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
 
     @Override
     public BuildingDTO toDto(Building entity) {
+        if (entity == null)
+            return null;
         BuildingDTO dto = convert(entity, BuildingDTO.class);
         {
             DistrictDTO district = convert(entity.getDistrict(), DistrictDTO.class);
@@ -153,6 +157,8 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
 
     @Override
     public Building toEntity(BuildingDTO dto) {
+        if (dto == null)
+            return null;
         Building entity = convert(dto, Building.class);
         {
             District district = convert(dto.getDistrict(), District.class);
