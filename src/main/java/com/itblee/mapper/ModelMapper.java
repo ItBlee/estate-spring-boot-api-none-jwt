@@ -1,6 +1,5 @@
 package com.itblee.mapper;
 
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class ModelMapper {
-    private static ModelMapper instance;
     private final ObjectMapper mapper;
 
     private ModelMapper() {
@@ -17,21 +15,21 @@ public class ModelMapper {
         this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
+    private static final class InstanceHolder {
+        static final ModelMapper instance = new ModelMapper();
+    }
+
     public static ModelMapper getInstance() {
-        if (instance == null) {
-            instance = new ModelMapper();
-        }
-        return instance;
+        return InstanceHolder.instance;
     }
 
-    public <T> T convertModel(Object object, Class<T> convertTo) {
-        return mapper.convertValue(object, convertTo);
+    public <T> T mapModel(Object object, Class<T> mapTo) {
+        return this.mapper.convertValue(object, mapTo);
     }
 
-    public <T, V> List<T> convertModel(Collection<V> objects, Class<T> convertTo) {
+    public <T, V> List<T> mapModel(Collection<V> objects, Class<T> mapTo) {
         List<T> list = new ArrayList<>();
-        objects.forEach(o -> list.add(convertModel(o, convertTo)));
+        objects.forEach(o -> list.add(mapModel(o, mapTo)));
         return list;
     }
-
 }

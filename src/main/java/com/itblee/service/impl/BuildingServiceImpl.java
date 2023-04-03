@@ -23,13 +23,13 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public BuildingDTO findOne(Long id) {
         Building building = buildingRepository.findOne(id);
-        return buildingMapper.mapToDto(building);
+        return buildingMapper.toDto(building);
     }
 
     @Override
     public List<BuildingSearchResponse> findAll() {
         List<Building> buildings = buildingRepository.findAll();
-        return buildingMapper.mapToResponse(buildings);
+        return buildingMapper.toResponse(buildings);
     }
 
     @Override

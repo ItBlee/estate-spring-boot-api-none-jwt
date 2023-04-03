@@ -1,4 +1,4 @@
 package com.itblee.entity;
 
-public class District extends CodeEntity {
+public class District extends BaseEntityCode {
 }

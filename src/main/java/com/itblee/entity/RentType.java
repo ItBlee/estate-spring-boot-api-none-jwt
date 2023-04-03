@@ -1,5 +1,5 @@
 package com.itblee.entity;
 
-public class RentType extends CodeEntity {
+public class RentType extends BaseEntityCode {
 
 }

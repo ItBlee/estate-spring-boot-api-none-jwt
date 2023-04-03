@@ -1,10 +1,9 @@
 package com.itblee.mapper;
 
 import java.sql.ResultSet;
-import java.util.List;
+import java.sql.SQLException;
 
 public interface RowMapper<T> {
-	List<T> processResultSet(ResultSet resultSet);
-	T mapRow(ResultSet resultSet);
-	T mergeRow(ResultSet resultSet, T oldRow);
+	T mapRow(ResultSet resultSet) throws SQLException;
+	T mergeRow(ResultSet resultSet, T mergeTo) throws SQLException;
 }

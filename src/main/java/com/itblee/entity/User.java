@@ -3,7 +3,7 @@ package com.itblee.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-public class User extends BaseEntity {
+public class User extends BaseEntityAudit {
     private String username;
     private String password;
     private String fullName;

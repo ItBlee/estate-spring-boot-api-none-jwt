@@ -3,7 +3,8 @@ package com.itblee.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Building extends BaseEntity {
+public class Building extends BaseEntityAudit {
+
     private String name;
     private String street;
     private String ward;

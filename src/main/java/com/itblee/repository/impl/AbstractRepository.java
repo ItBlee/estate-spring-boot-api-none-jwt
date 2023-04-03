@@ -1,32 +1,42 @@
 package com.itblee.repository.impl;
 
 import com.itblee.exception.RepositoryException;
-import com.itblee.mapper.RowMapper;
+import com.itblee.mapper.ResultSetExtractor;
 import com.itblee.repository.GenericRepository;
+import com.mysql.cj.jdbc.MysqlDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
+import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public abstract class AbstractRepository<T> implements GenericRepository<T> {
 
-	final ResourceBundle bundle = ResourceBundle.getBundle("Application");
+	@Autowired
+	private Environment env;
 
 	public void testDriver() throws ClassNotFoundException {
 		try {
-			Class.forName(bundle.getString("db.driver"));
+			Class.forName(env.getProperty("db.driver"));
 		} catch (ClassNotFoundException e) {
 			throw new ClassNotFoundException("Driver not found " + e.getMessage());
 		}
 	}
 
+	private DataSource getDataSource() {
+		MysqlDataSource source = new MysqlDataSource();
+		source.setServerName(env.getProperty("db.url"));
+		source.setPortNumber(Integer.parseInt(env.getProperty("db.port")));
+		source.setDatabaseName(env.getProperty("db.name"));
+		source.setUser(env.getProperty("db.username"));
+		source.setPassword(env.getProperty("db.password"));
+		return source;
+	}
+
 	public Connection getConnection() throws SQLException, ClassNotFoundException {
 		testDriver();
-		String url = bundle.getString("db.url");
-		String username = bundle.getString("db.username");
-		String password = bundle.getString("db.password");
-		return DriverManager.getConnection(url, username, password);
+		return getDataSource().getConnection();
 	}
 
 	private void setParameter(PreparedStatement statement, Object... parameters) throws SQLException {
@@ -46,14 +56,14 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 	}
 
 	@Override
-	public List<T> query(String sql, RowMapper<T> rowMapper, Object... parameters) {
+	public List<T> query(String sql, ResultSetExtractor<List<T>> extractor, Object... parameters) {
 		List<T> results;
 		ResultSet resultSet = null;
 		try (Connection connection = getConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql)) {
 			setParameter(statement, parameters);
 			resultSet = statement.executeQuery();
-			results = rowMapper.processResultSet(resultSet);
+			results = extractor.extractData(resultSet);
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new RepositoryException(e);

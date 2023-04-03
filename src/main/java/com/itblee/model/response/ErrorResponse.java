@@ -1,10 +1,11 @@
 package com.itblee.model.response;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ErrorResponse {
 	private String error;
-	private ArrayList<String> details;
+	private List<String> details = new ArrayList<>();
 	
 	public ErrorResponse() {
 		super();
@@ -18,11 +19,11 @@ public class ErrorResponse {
 		this.error = error;
 	}
 
-	public ArrayList<String> getDetails() {
+	public List<String> getDetails() {
 		return details;
 	}
 
-	public void setDetails(ArrayList<String> details) {
+	public void setDetails(List<String> details) {
 		this.details = details;
 	}
 	

@@ -1,10 +1,11 @@
 package com.itblee.entity;
 
-public abstract class CodeEntity extends BaseEntity {
-    protected String name;
-    protected String code;
+public abstract class BaseEntityCode extends BaseEntity {
 
-    public CodeEntity() {
+    private String name;
+    private String code;
+
+    public BaseEntityCode() {
     }
 
     public String getName() {
@@ -22,4 +23,5 @@ public abstract class CodeEntity extends BaseEntity {
     public void setCode(String code) {
         this.code = code;
     }
+
 }

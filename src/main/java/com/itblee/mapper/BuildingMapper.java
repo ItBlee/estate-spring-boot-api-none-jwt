@@ -7,13 +7,16 @@ import com.itblee.model.response.BuildingSearchResponse;
 import java.util.Collection;
 import java.util.List;
 
-public interface BuildingMapper extends RowMapper<Building> {
-	BuildingSearchResponse mapToResponse(Building entity);
-	List<BuildingSearchResponse> mapToResponse(Collection<Building> entities);
+public interface BuildingMapper extends ResultSetExtractor<List<Building>>, RowMapper<Building> {
 
-	BuildingDTO mapToDto(Building entity);
-	List<BuildingDTO> mapToDto(Collection<Building> entities);
+	BuildingSearchResponse toResponse(Building entity);
+	List<BuildingSearchResponse> toResponse(Collection<Building> entities);
 
-	Building mapToEntity(BuildingDTO filter);
-	List<Building> mapToEntity(Collection<BuildingDTO> filters);
+	BuildingDTO toDto(Building entity);
+	List<BuildingDTO> toDto(Collection<Building> entities);
+
+	Building toEntity(BuildingDTO dto);
+	List<Building> toEntity(Collection<BuildingDTO> dtos);
+
 }
+

@@ -1,6 +1,6 @@
 package com.itblee.entity;
 
-public class RentArea extends BaseEntity {
+public class RentArea extends BaseEntityAudit {
     private Integer value;
     private Long buildingID;
 
