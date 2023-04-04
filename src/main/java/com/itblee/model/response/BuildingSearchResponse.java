@@ -1,6 +1,7 @@
 package com.itblee.model.response;
 
 import com.itblee.model.dto.AssignUserDTO;
+import com.itblee.model.dto.RentAreaDTO;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class BuildingSearchResponse {
 	private String managerPhone;
 	private Integer floorArea;
 	private Integer rentPrice;
-	private String rentPriceDescription;
+	private List<RentAreaDTO> rentAreas;
 	private Double brokerageFee;
 	private Timestamp createdDate;
 
@@ -79,12 +80,12 @@ public class BuildingSearchResponse {
 		this.floorArea = floorArea;
 	}
 
-	public String getRentPriceDescription() {
-		return rentPriceDescription;
+	public List<RentAreaDTO> getRentAreas() {
+		return rentAreas;
 	}
 
-	public void setRentPriceDescription(String rentPriceDescription) {
-		this.rentPriceDescription = rentPriceDescription;
+	public void setRentAreas(List<RentAreaDTO> rentAreas) {
+		this.rentAreas = rentAreas;
 	}
 
 	public Integer getRentPrice() {

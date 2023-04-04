@@ -114,12 +114,14 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
         if (entity == null)
             return null;
         BuildingSearchResponse response = convert(entity, BuildingSearchResponse.class);
-        List<AssignUserDTO> assignUserDTOS = convert(entity.getAssignUsers(), AssignUserDTO.class);
-        response.setAssignUsers(assignUserDTOS);
+        List<RentAreaDTO> rentAreas = convert(entity.getRentAreas(), RentAreaDTO.class);
+        List<AssignUserDTO> assignUsers = convert(entity.getAssignUsers(), AssignUserDTO.class);
+        response.setAssignUsers(assignUsers);
         String address = Stream.of(entity.getStreet(), entity.getWard(), entity.getDistrict().getName())
                 .filter(str -> str != null && !str.isEmpty())
                 .collect(Collectors.joining(", "));
         response.setAddress(address);
+        response.setRentAreas(rentAreas);
         return response;
     }
 
