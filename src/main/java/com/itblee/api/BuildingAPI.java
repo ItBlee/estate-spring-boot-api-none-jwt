@@ -2,6 +2,7 @@ package com.itblee.api;
 
 import com.itblee.exception.NoContentException;
 import com.itblee.model.dto.BuildingDTO;
+import com.itblee.model.request.BuildingSearchRequest;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,14 @@ public class BuildingAPI {
 	private BuildingService buildingService;
 
 	@GetMapping
-	public List<BuildingSearchResponse> getBuilding() {
-		List<BuildingSearchResponse> responses = buildingService.findAll();
+	public List<BuildingSearchResponse> getBuilding(BuildingSearchRequest request) {
+		List<BuildingSearchResponse> responses = buildingService.findAll(request);
 		if (responses.isEmpty()) {
 			throw new NoContentException();
 		}
 		return responses;
 	}
-	
+
 	@GetMapping("/{buildingid}")
 	public BuildingDTO getDetail(@PathVariable("buildingid") Long id) {
 		BuildingDTO dto = buildingService.findOne(id);

@@ -1,13 +1,12 @@
 package com.itblee.repository.impl;
 
-import com.itblee.exception.RepositoryException;
+import com.itblee.exception.ErrorRepositoryException;
 import com.itblee.mapper.ResultSetExtractor;
 import com.itblee.repository.GenericRepository;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
 
@@ -83,7 +82,7 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 			results = extractor.extractData(resultSet);
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			throw new RepositoryException(e);
+			throw new ErrorRepositoryException(e);
 		} finally {
 			close(resultSet);
 		}
@@ -108,11 +107,11 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 			} catch (SQLException e) {
 				connection.rollback();
 				e.printStackTrace();
-				throw new RepositoryException(e);
+				throw new ErrorRepositoryException(e);
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			throw new RepositoryException(e);
+			throw new ErrorRepositoryException(e);
 		} finally {
 			close(resultSet);
 		}
@@ -131,11 +130,11 @@ public abstract class AbstractRepository<T> implements GenericRepository<T> {
 			} catch (SQLException e) {
 				connection.rollback();
 				e.printStackTrace();
-				throw new RepositoryException(e);
+				throw new ErrorRepositoryException(e);
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			throw new RepositoryException(e);
+			throw new ErrorRepositoryException(e);
 		}
 	}
 
