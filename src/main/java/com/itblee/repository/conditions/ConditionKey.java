@@ -1,6 +1,8 @@
 package com.itblee.repository.conditions;
 
 public enum ConditionKey {
+
+    //Key for Building - map with column name.
     BUILDING_NAME("building.name"),
     BUILDING_FLOOR_AREA("building.floorarea"),
     BUILDING_DISTRICT("building.ward"),

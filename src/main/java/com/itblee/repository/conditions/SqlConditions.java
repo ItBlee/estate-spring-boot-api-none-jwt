@@ -1,6 +1,6 @@
 package com.itblee.repository.conditions;
 
 public interface SqlConditions {
-    StringBuilder generateSQL();
-    StringBuilder generateSQL(StringBuilder builder);
+    StringBuilder generateWhereClauseSQL();
+    StringBuilder generateWhereClauseSQL(StringBuilder builder);
 }

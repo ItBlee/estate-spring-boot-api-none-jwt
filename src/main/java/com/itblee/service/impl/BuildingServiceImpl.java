@@ -32,7 +32,6 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public List<BuildingSearchResponse> findAll(BuildingSearchRequest request) {
-        List<Building> buildings;
         SqlConditionsImpl conditions = new SqlConditionsImpl();
         conditions.put(ConditionKey.BUILDING_NAME, request.getName());
         conditions.put(ConditionKey.BUILDING_FLOOR_AREA, request.getFloorarea());
@@ -48,6 +47,8 @@ public class BuildingServiceImpl implements BuildingService {
         conditions.put(ConditionKey.BUILDING_MANAGER_PHONE, request.getManagerPhone());
         conditions.put(ConditionKey.BUILDING_STAFF, request.getStaffid());
         conditions.put(ConditionKey.BUILDING_RENT_TYPES, request.getRenttypes());
+
+        List<Building> buildings;
         if (!conditions.getMap().isEmpty())
             buildings = buildingRepository.findByConditions(conditions);
         else buildings = buildingRepository.findAll();

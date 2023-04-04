@@ -32,7 +32,7 @@ public class BuildingRepositoryImpl extends AbstractRepository<Building> impleme
     @Override
     public List<Building> findByConditions(SqlConditions conditions) {
         StringBuilder sql = getQuerySQL();
-        sql = conditions.generateSQL(sql);
+        sql.append(conditions.generateWhereClauseSQL());
         return query(sql.toString(), buildingMapper);
     }
 
