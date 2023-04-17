@@ -13,6 +13,7 @@ public class ModelMapper {
     private ModelMapper() {
         this.mapper = new ObjectMapper();
         this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        //this.mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     private static final class InstanceHolder {
@@ -27,7 +28,7 @@ public class ModelMapper {
         return this.mapper.convertValue(object, mapTo);
     }
 
-    public <T, V> List<T> mapModel(Collection<V> objects, Class<T> mapTo) {
+    public <T, E> List<T> mapModel(Collection<E> objects, Class<T> mapTo) {
         List<T> list = new ArrayList<>();
         objects.forEach(o -> list.add(mapModel(o, mapTo)));
         return list;

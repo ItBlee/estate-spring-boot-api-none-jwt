@@ -1,15 +1,13 @@
 package com.itblee.repository;
 
 import com.itblee.entity.Building;
-import com.itblee.repository.conditions.SqlConditions;
+import com.itblee.repository.condition.SqlConditionBuilder;
 
 import java.util.List;
 
 public interface BuildingRepository extends GenericRepository<Building> {
-    Building findOne(Long id);
-    List<Building> findAll();
-    List<Building> findByConditions(SqlConditions conditions);
-    Long save(Building building);
-    void update(Building building);
+    List<Building> findByCondition(SqlConditionBuilder conditions);
+    Long save(Building entity);
+    void update(Building entity);
     void delete(Long id);
 }

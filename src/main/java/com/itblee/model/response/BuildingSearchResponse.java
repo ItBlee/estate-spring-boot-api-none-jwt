@@ -15,11 +15,10 @@ public class BuildingSearchResponse {
 	private String managerPhone;
 	private Integer floorArea;
 	private Integer rentPrice;
-	private List<RentAreaDTO> rentAreas;
+	private List<RentAreaDTO> rentAreas = new ArrayList<>();
 	private Double brokerageFee;
-	private Timestamp createdDate;
-
 	private List<AssignUserDTO> assignUsers = new ArrayList<>();
+	private Timestamp createdDate;
 
 	public BuildingSearchResponse() {
 	}

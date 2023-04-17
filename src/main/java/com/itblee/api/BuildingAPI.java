@@ -2,13 +2,14 @@ package com.itblee.api;
 
 import com.itblee.exception.NoContentException;
 import com.itblee.model.dto.BuildingDTO;
-import com.itblee.model.request.BuildingSearchRequest;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/building")
@@ -18,35 +19,36 @@ public class BuildingAPI {
 	private BuildingService buildingService;
 
 	@GetMapping
-	public List<BuildingSearchResponse> getBuilding(BuildingSearchRequest request) {
-		List<BuildingSearchResponse> responses = buildingService.findAll(request);
-		if (responses.isEmpty()) {
-			throw new NoContentException();
-		}
+	public List<BuildingSearchResponse> getBuilding(
+			@RequestParam(required = false) Map<String, Object> params,
+			@RequestParam(required = false) Object[] types) {
+		params.put("types", types);
+		List<BuildingSearchResponse> responses = buildingService.findByCondition(params);
+		if (responses.isEmpty())
+			throw new NoContentException("No buildings found.");
 		return responses;
 	}
 
 	@GetMapping("/{buildingid}")
 	public BuildingDTO getDetail(@PathVariable("buildingid") Long id) {
-		BuildingDTO dto = buildingService.findOne(id);
-		if (dto == null) {
-			throw new NoContentException();
-		}
-		return dto;
+		Optional<BuildingDTO> dto = buildingService.findOne(id);
+		if (!dto.isPresent())
+			throw new NoContentException("No building found.");
+		return dto.get();
 	}
 	
 	@PostMapping
 	public Object createBuilding(@RequestBody BuildingDTO building) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	@PutMapping
 	public Object updateBuilding(@RequestBody BuildingDTO building) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	@DeleteMapping
 	public void deleteBuilding(@RequestBody Long[] ids) {
-		System.out.println("");
+		throw new UnsupportedOperationException();
 	}
 }
