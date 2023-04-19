@@ -1,11 +1,23 @@
-package com.itblee.repository.condition;
+package com.itblee.repository.impl;
 
-import com.itblee.repository.condition.key.SqlJoin;
+import com.itblee.repository.ConditionKey;
+import com.itblee.repository.SqlBuilder;
+import com.itblee.repository.key.SqlJoin;
 import com.itblee.utils.StringUtils;
 
 import java.util.*;
 
-public abstract class AbstractSqlConditionBuilder implements SqlConditionBuilder {
+public abstract class AbstractSqlBuilder<T extends ConditionKey> implements SqlBuilder<T> {
+
+    protected final Class<T> typeFlag;
+
+    protected AbstractSqlBuilder(Class<T> type) {
+        if (type == null)
+            throw new IllegalArgumentException("Type required");
+        if (type.getEnumConstants().length == 0)
+            throw new IllegalStateException("Invalid key with no enum.");
+        this.typeFlag = type;
+    }
 
     protected final static class Range {
         public Number from;
@@ -26,13 +38,11 @@ public abstract class AbstractSqlConditionBuilder implements SqlConditionBuilder
     }
 
     @Override
-    public StringBuilder buildFinalQuery(Class<? extends ConditionKey> kClass) {
-        if (kClass == null)
-            throw new IllegalArgumentException("Require default Key for maker.");
-        ConditionKey[] keys = kClass.getEnumConstants();
+    public StringBuilder buildFinalQuery() {
+        ConditionKey[] keys = typeFlag.getEnumConstants();
         if (keys == null || keys.length == 0)
             throw new IllegalStateException("Illegal state Key.");
-        ConditionKey tar = kClass.getEnumConstants()[0].getDefault();
+        ConditionKey tar = keys[0].getDefault();
 
         StringBuilder query = new StringBuilder();
         query.append(" SELECT ");
@@ -46,30 +56,30 @@ public abstract class AbstractSqlConditionBuilder implements SqlConditionBuilder
     }
 
     @Override
-    public StringBuilder buildSelectQuery(Collection<ConditionKey> keys) {
+    public StringBuilder buildSelectQuery(Collection<T> keys) {
         if (keys == null)
             throw new IllegalArgumentException();
         Set<String> cols = new LinkedHashSet<>();
         for (ConditionKey key : keys)
             cols.addAll(key.props().getSelectColumn());
         cols.forEach(col -> col = col.trim());
+        cols.removeIf(StringUtils::isBlank);
         return new StringBuilder(String.join(", ", cols));
     }
 
     @Override
-    public StringBuilder buildJoinQuery(Collection<ConditionKey> keys) {
+    public StringBuilder buildJoinQuery(Collection<T> keys) {
         if (keys == null)
             throw new IllegalArgumentException();
         Set<String> joins = new LinkedHashSet<>();
         for (ConditionKey key : keys) {
             for (SqlJoin join : key.props().getJoin()) {
-                String sql = "";
-                if (!StringUtils.isBlank(join.getJoinTable())) {
-                    sql = join.getJoinType().getKeyword() + " " + join.getJoinTable();
+                if (!StringUtils.isBlank(join.getJoinTable()) && join.getJoinType() != null) {
+                    String sql = join.getJoinType().getKeyword() + " " + join.getJoinTable();
                     if (!StringUtils.isBlank(join.getJoinON()))
                         sql += " ON " + join.getJoinON();
+                    joins.add(sql);
                 }
-                joins.add(sql);
             }
         }
         joins.forEach(join -> join = join.trim());
@@ -77,12 +87,12 @@ public abstract class AbstractSqlConditionBuilder implements SqlConditionBuilder
     }
 
     @Override
-    public StringBuilder buildWhereQuery(Map<ConditionKey, Object> map) {
+    public StringBuilder buildWhereQuery(Map<T, Object> map) {
         if (map == null)
             throw new IllegalArgumentException();
         StringBuilder sql = new StringBuilder();
         //convert elements of Map(ConditionKey, value) to query clause after WHERE.
-        for (Map.Entry<ConditionKey, Object> entry : map.entrySet()) {
+        for (Map.Entry<? extends ConditionKey, Object> entry : map.entrySet()) {
             if (entry.getValue() == null)
                 continue;
             StringBuilder clause = new StringBuilder();
@@ -113,8 +123,8 @@ public abstract class AbstractSqlConditionBuilder implements SqlConditionBuilder
                 }
                 String join = String.join(",", list);
                 clause.append("IN (").append(join).append(")");
-            } else if (val instanceof SqlConditionMap.Range) {
-                SqlConditionMap.Range range = (SqlConditionMap.Range) val;
+            } else if (val instanceof Range) {
+                Range range = (Range) val;
                 if (range.from == null)
                     clause.append("<= ").append(range.to);
                 else if (range.to == null)

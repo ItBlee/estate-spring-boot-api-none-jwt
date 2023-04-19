@@ -5,7 +5,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.ResourceBundle;
 
 public final class ConnectionUtils {
@@ -42,8 +42,8 @@ public final class ConnectionUtils {
                 statement.setString(index, (String) parameter);
             } else if (parameter instanceof Integer) {
                 statement.setInt(index, (Integer) parameter);
-            } else if (parameter instanceof Timestamp) {
-                statement.setTimestamp(index, (Timestamp) parameter);
+            } else if (parameter instanceof Date) {
+                statement.setDate(index, (Date) parameter);
             }
         }
     }

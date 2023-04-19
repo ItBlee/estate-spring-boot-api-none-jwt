@@ -5,8 +5,8 @@ import com.itblee.mapper.BuildingMapper;
 import com.itblee.model.dto.BuildingDTO;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.repository.condition.SqlConditionMap;
-import com.itblee.repository.condition.key.BuildingKey;
+import com.itblee.repository.impl.SqlConditionMap;
+import com.itblee.repository.key.BuildingKey;
 import com.itblee.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +27,10 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public Optional<BuildingDTO> findOne(Long id) {
-        Map<String, Object> params = Collections.singletonMap("id", id);
-        SqlConditionMap condition = buildingMapper.toCondition(params);
-        condition.put(BuildingKey.ALL);
-        List<Building> result = buildingRepository.findByCondition(condition);
+        SqlConditionMap<BuildingKey> conditions = new SqlConditionMap<>(BuildingKey.class);
+        conditions.put(BuildingKey.ALL);
+        conditions.put(Collections.singletonMap("id", id));
+        List<Building> result = buildingRepository.findByCondition(conditions);
         if (result.isEmpty())
             return Optional.empty();
         return Optional.of(buildingMapper.toDto(result.get(0)));
@@ -38,9 +38,10 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public List<BuildingSearchResponse> findByCondition(Map<String, Object> params) {
-        SqlConditionMap condition = buildingMapper.toCondition(params);
-        condition.put(BuildingKey.ALL);
-        List<Building> results = buildingRepository.findByCondition(condition);
+        SqlConditionMap<BuildingKey> conditions = new SqlConditionMap<>(BuildingKey.class);
+        conditions.put(BuildingKey.ALL);
+        conditions.put(params);
+        List<Building> results = buildingRepository.findByCondition(conditions);
         return buildingMapper.toResponse(results);
     }
 

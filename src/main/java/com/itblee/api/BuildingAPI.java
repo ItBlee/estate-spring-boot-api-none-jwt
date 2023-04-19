@@ -38,17 +38,17 @@ public class BuildingAPI {
 	}
 	
 	@PostMapping
-	public Object createBuilding(@RequestBody BuildingDTO building) {
+	public Object createBuilding(BuildingDTO building) {
 		throw new UnsupportedOperationException();
 	}
 	
 	@PutMapping
-	public Object updateBuilding(@RequestBody BuildingDTO building) {
+	public Object updateBuilding(BuildingDTO building) {
 		throw new UnsupportedOperationException();
 	}
 	
 	@DeleteMapping
-	public void deleteBuilding(@RequestBody Long[] ids) {
+	public void deleteBuilding(Long[] ids) {
 		throw new UnsupportedOperationException();
 	}
 }

@@ -1,81 +1,83 @@
-package com.itblee.repository.condition.key;
+package com.itblee.repository.key;
 
-import com.itblee.repository.condition.ConditionKey;
+import com.itblee.repository.ConditionKey;
+
+import java.sql.Date;
 
 public enum BuildingKey implements ConditionKey {
 
-    DEFAULT (new SqlQuery() {{
+    DEFAULT ("building", new SqlQuery() {{
         select("building.id");
     }}),
 
-    ID (new SqlQuery() {{
-        type(Integer.class);
+    ID ("id", new SqlQuery() {{
+        typeOf(Long.class);
         select("building.id");
         where("building.id");
     }}),
 
-    NAME (new SqlQuery() {{
-        type(String.class);
+    NAME ("name", new SqlQuery() {{
+        typeOf(String.class);
         select("building.name");
         where("building.name");
     }}),
 
-    WARD (new SqlQuery() {{
-        type(String.class);
+    WARD ("ward", new SqlQuery() {{
+        typeOf(String.class);
         select("building.ward");
         where("building.ward");
     }}),
 
-    LEVEL (new SqlQuery() {{
-        type(String.class);
+    LEVEL ("level", new SqlQuery() {{
+        typeOf(String.class);
         select("building.level");
         where("building.level");
     }}),
 
-    STREET (new SqlQuery() {{
-        type(String.class);
+    STREET ("street", new SqlQuery() {{
+        typeOf(String.class);
         select("building.street");
         where("building.street");
     }}),
 
-    DIRECTION (new SqlQuery() {{
-        type(String.class);
+    DIRECTION ("direction", new SqlQuery() {{
+        typeOf(String.class);
         select("building.direction");
         where("building.direction");
     }}),
 
-    COST_RENT (new SqlQuery() {{
-        type(Integer.class);
+    RENT_PRICE("rentprice", true, new SqlQuery() {{
+        typeOf(Integer.class);
         select("building.rentprice");
         where("building.rentprice");
     }}),
 
-    FLOOR_AREA (new SqlQuery() {{
-        type(Integer.class);
+    FLOOR_AREA ("floorarea", new SqlQuery() {{
+        typeOf(Integer.class);
         select("building.floorarea");
         where("building.floorarea");
     }}),
 
-    MANAGER_NAME (new SqlQuery() {{
-        type(String.class);
+    MANAGER_NAME ("managername", new SqlQuery() {{
+        typeOf(String.class);
         select("building.managername");
         where("building.managername");
     }}),
 
-    MANAGER_PHONE (new SqlQuery() {{
-        type(String.class);
+    MANAGER_PHONE ("managerphone", new SqlQuery() {{
+        typeOf(String.class);
         select("building.managerphone");
         where("building.managerphone");
     }}),
 
-    NUMBER_OF_BASEMENT (new SqlQuery() {{
-        type(Integer.class);
+    NUMBER_OF_BASEMENT ("numberofbasement", new SqlQuery() {{
+        typeOf(Integer.class);
         select("building.numberofbasement");
         where("building.numberofbasement");
     }}),
 
-    DISTRICT (new SqlQuery() {{
-        type(String.class);
+    DISTRICT_CODE("districtcode", new SqlQuery() {{
+        typeOf(String.class);
         select("district.code AS \"districtCode\"",
                 "district.name AS \"districtName\"");
         joinWith(new SqlJoin() {{
@@ -86,8 +88,8 @@ public enum BuildingKey implements ConditionKey {
         where("district.code");
     }}),
 
-    RENT_AREA (new SqlQuery() {{
-        type(Integer.class);
+    RENT_AREA ("rentarea", true, new SqlQuery() {{
+        typeOf(Integer.class);
         select("rentarea.id AS \"rentareaID\"",
                 "rentarea.value AS \"rentareaValue\"");
         joinWith(new SqlJoin() {{
@@ -98,8 +100,8 @@ public enum BuildingKey implements ConditionKey {
         where("rentarea.value");
     }}),
 
-    RENT_TYPES (new SqlQuery() {{
-        type(String[].class);
+    RENT_TYPES ("types", new SqlQuery() {{
+        typeOf(String[].class);
         select("renttype.id AS \"renttypeID\"",
                 "renttype.code AS \"renttypeCode\"",
                 "renttype.name AS \"renttypeName\"");
@@ -116,8 +118,8 @@ public enum BuildingKey implements ConditionKey {
         where("renttype.code");
     }}),
 
-    STAFF (new SqlQuery() {{
-        type(Long.class);
+    STAFF ("staffid", new SqlQuery() {{
+        typeOf(Long.class);
         select("ur.id AS \"userID\"",
                 "ur.fullname AS \"userFullName\"");
         joinWith(new SqlJoin() {{
@@ -134,6 +136,73 @@ public enum BuildingKey implements ConditionKey {
             on("ur.id = assignmentbuilding.staffid");
         }});
         where("ur.id");
+    }}),
+
+    MAP ("map", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    NOTE ("note", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    IMAGE ("image", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    CAR_FEE ("carfee", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    DEPOSIT ("deposit", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    PAYMENT ("payment", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    RENT_TIME ("renttime", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    WATER_FEE ("waterfee", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    STRUCTURE ("structure", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    CREATED_BY ("createdby", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    MODIFIED_BY ("modifiedby", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    SERVICE_FEE ("servicefee", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    DISTRICT_ID ("districtid", new SqlQuery() {{
+        typeOf(Long.class);
+    }}),
+    OVERTIME_FEE ("overtimefee", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    CREATED_DATE ("createddate", new SqlQuery() {{
+        typeOf(Date.class);
+    }}),
+    MODIFIED_DATE ("modifieddate", new SqlQuery() {{
+        typeOf(Date.class);
+    }}),
+    MOTORBIKE_FEE ("motorbikefee", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    BROKERAGE_FEE ("brokeragefee", new SqlQuery() {{
+        typeOf(Double.class);
+    }}),
+    DECORATION_TIME ("decorationtime", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    ELECTRICITY_FEE ("electricityfee", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    LINK_OF_BUILDING ("linkofbuilding", new SqlQuery() {{
+        typeOf(String.class);
+    }}),
+    RENT_PRICE_DESCRIPTION ("rentpricedescription", new SqlQuery() {{
+        typeOf(String.class);
     }}),
 
     ALL (new SqlQuery() {{
@@ -216,9 +285,31 @@ public enum BuildingKey implements ConditionKey {
         );
     }});
 
+    private final String param;
+    private final boolean isRange;
     private final SqlQuery query;
 
     BuildingKey(SqlQuery query) {
+        if (query == null)
+            throw new IllegalArgumentException();
+        this.param = null;
+        this.isRange = false;
+        this.query = query;
+    }
+
+    BuildingKey(String param, SqlQuery query) {
+        if (query == null)
+            throw new IllegalArgumentException();
+        this.param = param;
+        this.isRange = false;
+        this.query = query;
+    }
+
+    BuildingKey(String param, boolean isRange, SqlQuery query) {
+        if (query == null)
+            throw new IllegalArgumentException();
+        this.param = param;
+        this.isRange = isRange;
         this.query = query;
     }
 
@@ -233,12 +324,22 @@ public enum BuildingKey implements ConditionKey {
     }
 
     @Override
+    public String getParam() {
+        return param;
+    }
+
+    public boolean isRange() {
+        return isRange;
+    }
+
+    @Override
     public String getName() {
         return getTableName() + " " + this.name().toLowerCase();
     }
 
     @Override
     public String getTableName() {
-        return "building";
+        return DEFAULT.getParam();
     }
+
 }

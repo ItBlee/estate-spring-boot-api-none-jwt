@@ -1,10 +1,12 @@
-package com.itblee.repository.condition;
+package com.itblee.repository;
 
-import com.itblee.repository.condition.key.SqlQuery;
+import com.itblee.repository.key.SqlQuery;
 
 public interface ConditionKey {
     ConditionKey getDefault();
     SqlQuery props();
+    String getParam();
+    boolean isRange();
     String getName();
     String getTableName();
 }

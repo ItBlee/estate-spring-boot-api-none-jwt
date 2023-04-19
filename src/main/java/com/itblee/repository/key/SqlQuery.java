@@ -1,4 +1,4 @@
-package com.itblee.repository.condition.key;
+package com.itblee.repository.key;
 
 import java.util.*;
 
@@ -18,7 +18,7 @@ public class SqlQuery {
         return type;
     }
 
-    public void type(Class<?> type) {
+    public void typeOf(Class<?> type) {
         if (this.type == null)
             this.type = type;
         else throw new IllegalStateException("Already set !");
@@ -68,12 +68,15 @@ public class SqlQuery {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SqlQuery)) return false;
-        SqlQuery sqlKey = (SqlQuery) o;
-        return Objects.equals(getWhereColumn(), sqlKey.getWhereColumn());
+        SqlQuery sqlQuery = (SqlQuery) o;
+        return Objects.equals(getType(), sqlQuery.getType())
+                && Objects.equals(getSelectColumn(), sqlQuery.getSelectColumn())
+                && Objects.equals(getJoin(), sqlQuery.getJoin())
+                && Objects.equals(getWhereColumn(), sqlQuery.getWhereColumn());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getWhereColumn());
+        return Objects.hash(getType(), getSelectColumn(), getJoin(), getWhereColumn());
     }
 }

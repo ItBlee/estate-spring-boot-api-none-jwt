@@ -1,4 +1,4 @@
-package com.itblee.repository.condition.key;
+package com.itblee.repository.key;
 
 import java.util.Objects;
 
@@ -69,12 +69,14 @@ public class SqlJoin {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SqlJoin)) return false;
-        SqlJoin joinMap = (SqlJoin) o;
-        return getJoinTable().equals(joinMap.getJoinTable());
+        SqlJoin sqlJoin = (SqlJoin) o;
+        return Objects.equals(getJoinTable(), sqlJoin.getJoinTable())
+                && Objects.equals(getJoinON(), sqlJoin.getJoinON())
+                && getJoinType() == sqlJoin.getJoinType();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getJoinTable());
+        return Objects.hash(getJoinTable(), getJoinON(), getJoinType());
     }
 }

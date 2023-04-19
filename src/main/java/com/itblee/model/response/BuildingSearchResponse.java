@@ -3,7 +3,7 @@ package com.itblee.model.response;
 import com.itblee.model.dto.AssignUserDTO;
 import com.itblee.model.dto.RentAreaDTO;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class BuildingSearchResponse {
 	private List<RentAreaDTO> rentAreas = new ArrayList<>();
 	private Double brokerageFee;
 	private List<AssignUserDTO> assignUsers = new ArrayList<>();
-	private Timestamp createdDate;
+	private Date createdDate;
 
 	public BuildingSearchResponse() {
 	}
@@ -103,11 +103,11 @@ public class BuildingSearchResponse {
 		this.brokerageFee = brokerageFee;
 	}
 
-	public Timestamp getCreatedDate() {
+	public Date getCreatedDate() {
 		return createdDate;
 	}
 
-	public void setCreatedDate(Timestamp createdDate) {
+	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
 }

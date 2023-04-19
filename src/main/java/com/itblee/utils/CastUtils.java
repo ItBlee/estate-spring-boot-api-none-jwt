@@ -1,5 +1,6 @@
 package com.itblee.utils;
 
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -19,9 +20,9 @@ public final class CastUtils {
         final String STRING_DELIMITER = ",";
 
         String str;
-        if (o instanceof CharSequence || o instanceof Number) {
+        if (o instanceof CharSequence || o instanceof Number || o instanceof Date) {
             str = o.toString();
-        } else if (o.getClass().isArray()) {
+        }else if (o.getClass().isArray()) {
             Object[] arr = (Object[]) o;
             str = String.join(STRING_DELIMITER, Arrays.copyOf(arr, arr.length, String[].class));
         } else if (o instanceof Collection<?>) {
@@ -43,6 +44,8 @@ public final class CastUtils {
                 obj = Long.valueOf(str);
             } else if (cls.isAssignableFrom(String[].class)) {
                 obj = str.split(STRING_DELIMITER);
+            }else if (cls.isAssignableFrom(Date.class)) {
+                obj = Date.valueOf(str);
             } else {
                 throw new IllegalArgumentException("Cast to " + cls.getSimpleName() + " not supported yet.");
             }
