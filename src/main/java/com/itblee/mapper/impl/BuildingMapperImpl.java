@@ -4,7 +4,7 @@ import com.itblee.entity.*;
 import com.itblee.mapper.BuildingMapper;
 import com.itblee.model.dto.*;
 import com.itblee.model.response.BuildingSearchResponse;
-import com.itblee.repository.key.BuildingKey;
+import com.itblee.repository.query.key.BuildingKey;
 import com.itblee.utils.StringUtils;
 import org.springframework.stereotype.Component;
 

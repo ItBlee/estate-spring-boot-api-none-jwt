@@ -1,6 +1,6 @@
-package com.itblee.repository.key;
+package com.itblee.repository.query.key;
 
-import com.itblee.repository.ConditionKey;
+import com.itblee.repository.query.ConditionKey;
 
 import java.sql.Date;
 
@@ -22,6 +22,18 @@ public enum BuildingKey implements ConditionKey {
         where("building.name");
     }}),
 
+    DISTRICT_CODE("districtcode", new SqlQuery() {{
+        typeOf(String.class);
+        select("district.code AS \"districtCode\"",
+                "district.name AS \"districtName\"");
+        joinWith(new SqlJoin() {{
+            type(SqlJoin.Type.LEFT_JOIN);
+            join("district");
+            on("building.districtid = district.id");
+        }});
+        where("district.code");
+    }}),
+
     WARD ("ward", new SqlQuery() {{
         typeOf(String.class);
         select("building.ward");
@@ -39,6 +51,7 @@ public enum BuildingKey implements ConditionKey {
         select("building.street");
         where("building.street");
     }}),
+
 
     DIRECTION ("direction", new SqlQuery() {{
         typeOf(String.class);
@@ -74,18 +87,6 @@ public enum BuildingKey implements ConditionKey {
         typeOf(Integer.class);
         select("building.numberofbasement");
         where("building.numberofbasement");
-    }}),
-
-    DISTRICT_CODE("districtcode", new SqlQuery() {{
-        typeOf(String.class);
-        select("district.code AS \"districtCode\"",
-                "district.name AS \"districtName\"");
-        joinWith(new SqlJoin() {{
-            type(SqlJoin.Type.LEFT_JOIN);
-            join("district");
-            on("building.districtid = district.id");
-        }});
-        where("district.code");
     }}),
 
     RENT_AREA ("rentarea", true, new SqlQuery() {{

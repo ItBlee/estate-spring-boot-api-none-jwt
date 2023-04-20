@@ -1,6 +1,6 @@
-package com.itblee.repository.key;
+package com.itblee.repository.query.key;
 
-import com.itblee.repository.ConditionKey;
+import com.itblee.repository.query.ConditionKey;
 
 public class ConditionKeyHolder implements ConditionKey {
 

@@ -1,4 +1,4 @@
-package com.itblee.repository.key;
+package com.itblee.repository.query.key;
 
 import java.util.Objects;
 
@@ -35,10 +35,11 @@ public class SqlJoin {
         return joinTable;
     }
 
-    public void join(String joinTable) {
+    public SqlJoin join(String joinTable) {
         if (this.joinTable == null)
             this.joinTable = joinTable;
         else throw new IllegalStateException("Already set !");
+        return this;
     }
 
     public String getJoinON() {
@@ -47,10 +48,11 @@ public class SqlJoin {
         return joinON;
     }
 
-    public void on(String joinON) {
+    public SqlJoin on(String joinON) {
         if (this.joinON == null)
             this.joinON = joinON;
         else throw new IllegalStateException("Already set !");
+        return this;
     }
 
     public Type getJoinType() {
@@ -59,10 +61,11 @@ public class SqlJoin {
         return joinType;
     }
 
-    public void type(Type joinType) {
+    public SqlJoin type(Type joinType) {
         if (this.joinType == null)
             this.joinType = joinType;
         else throw new IllegalStateException("Already set !");
+        return this;
     }
 
     @Override

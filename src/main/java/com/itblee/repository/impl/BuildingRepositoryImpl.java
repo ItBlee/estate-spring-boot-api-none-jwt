@@ -3,8 +3,7 @@ package com.itblee.repository.impl;
 import com.itblee.entity.Building;
 import com.itblee.mapper.BuildingMapper;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.repository.SqlBuilder;
-import com.itblee.repository.key.BuildingKey;
+import com.itblee.repository.query.SqlBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +16,7 @@ public class BuildingRepositoryImpl extends AbstractRepository<Building> impleme
     private BuildingMapper buildingMapper;
 
     @Override
-    public List<Building> findByCondition(SqlBuilder<BuildingKey> conditions) {
+    public List<Building> findByCondition(SqlBuilder conditions) {
         StringBuilder sql = conditions.buildFinalQuery();
         return query(sql.toString(), buildingMapper);
     }

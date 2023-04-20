@@ -1,6 +1,6 @@
-package com.itblee.repository;
+package com.itblee.repository.query;
 
-import com.itblee.repository.key.SqlQuery;
+import com.itblee.repository.query.key.SqlQuery;
 
 public interface ConditionKey {
     ConditionKey getDefault();

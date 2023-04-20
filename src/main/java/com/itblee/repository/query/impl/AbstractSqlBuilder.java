@@ -1,17 +1,17 @@
-package com.itblee.repository.impl;
+package com.itblee.repository.query.impl;
 
-import com.itblee.repository.ConditionKey;
-import com.itblee.repository.SqlBuilder;
-import com.itblee.repository.key.SqlJoin;
+import com.itblee.repository.query.ConditionKey;
+import com.itblee.repository.query.SqlBuilder;
+import com.itblee.repository.query.key.SqlJoin;
 import com.itblee.utils.StringUtils;
 
 import java.util.*;
 
-public abstract class AbstractSqlBuilder<T extends ConditionKey> implements SqlBuilder<T> {
+public abstract class AbstractSqlBuilder implements SqlBuilder {
 
-    protected final Class<T> typeFlag;
+    protected final Class<? extends ConditionKey> typeFlag;
 
-    protected AbstractSqlBuilder(Class<T> type) {
+    protected AbstractSqlBuilder(Class<? extends ConditionKey> type) {
         if (type == null)
             throw new IllegalArgumentException("Type required");
         if (type.getEnumConstants().length == 0)
@@ -19,7 +19,7 @@ public abstract class AbstractSqlBuilder<T extends ConditionKey> implements SqlB
         this.typeFlag = type;
     }
 
-    protected final static class Range {
+    public final static class Range {
         public Number from;
         public Number to;
 
@@ -56,7 +56,7 @@ public abstract class AbstractSqlBuilder<T extends ConditionKey> implements SqlB
     }
 
     @Override
-    public StringBuilder buildSelectQuery(Collection<T> keys) {
+    public StringBuilder buildSelectQuery(Collection<? extends ConditionKey> keys) {
         if (keys == null)
             throw new IllegalArgumentException();
         Set<String> cols = new LinkedHashSet<>();
@@ -68,7 +68,7 @@ public abstract class AbstractSqlBuilder<T extends ConditionKey> implements SqlB
     }
 
     @Override
-    public StringBuilder buildJoinQuery(Collection<T> keys) {
+    public StringBuilder buildJoinQuery(Collection<? extends ConditionKey> keys) {
         if (keys == null)
             throw new IllegalArgumentException();
         Set<String> joins = new LinkedHashSet<>();
@@ -87,7 +87,7 @@ public abstract class AbstractSqlBuilder<T extends ConditionKey> implements SqlB
     }
 
     @Override
-    public StringBuilder buildWhereQuery(Map<T, Object> map) {
+    public StringBuilder buildWhereQuery(Map<? extends ConditionKey, Object> map) {
         if (map == null)
             throw new IllegalArgumentException();
         StringBuilder sql = new StringBuilder();

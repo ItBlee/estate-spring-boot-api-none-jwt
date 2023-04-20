@@ -4,7 +4,7 @@ import com.itblee.entity.BaseEntity;
 import com.itblee.mapper.ModelMapper;
 import com.itblee.mapper.ResultSetExtractor;
 import com.itblee.mapper.RowMapper;
-import com.itblee.repository.ConditionKey;
+import com.itblee.repository.query.ConditionKey;
 import com.itblee.utils.StringUtils;
 
 import java.lang.reflect.Method;

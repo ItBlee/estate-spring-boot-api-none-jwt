@@ -1,4 +1,4 @@
-package com.itblee.repository.key;
+package com.itblee.repository.query.key;
 
 import java.util.*;
 
@@ -18,10 +18,11 @@ public class SqlQuery {
         return type;
     }
 
-    public void typeOf(Class<?> type) {
+    public SqlQuery typeOf(Class<?> type) {
         if (this.type == null)
             this.type = type;
         else throw new IllegalStateException("Already set !");
+        return this;
     }
 
     public Set<String> getSelectColumn() {
@@ -30,12 +31,13 @@ public class SqlQuery {
         return selectColumn;
     }
 
-    public void select(String... selectColumn) {
+    public SqlQuery select(String... selectColumn) {
         if (this.selectColumn == null)
             this.selectColumn = Collections.unmodifiableSet(
                     new LinkedHashSet<>(Arrays.asList(selectColumn))
             );
         else throw new IllegalStateException("Already set !");
+        return this;
     }
 
     public Set<SqlJoin> getJoin() {
@@ -44,12 +46,13 @@ public class SqlQuery {
         return join;
     }
 
-    public void joinWith(SqlJoin... join) {
+    public SqlQuery joinWith(SqlJoin... join) {
         if (this.join == null)
             this.join = Collections.unmodifiableSet(
                     new LinkedHashSet<>(Arrays.asList(join))
             );
         else throw new IllegalStateException("Already set !");
+        return this;
     }
 
     public String getWhereColumn() {
@@ -58,10 +61,11 @@ public class SqlQuery {
         return whereColumn;
     }
 
-    public void where(String whereColumn) {
+    public SqlQuery where(String whereColumn) {
         if (this.whereColumn == null)
             this.whereColumn = whereColumn;
         else throw new IllegalStateException("Already set !");
+        return this;
     }
 
     @Override

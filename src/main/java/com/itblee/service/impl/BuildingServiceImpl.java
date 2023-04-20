@@ -5,8 +5,11 @@ import com.itblee.mapper.BuildingMapper;
 import com.itblee.model.dto.BuildingDTO;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.repository.impl.SqlConditionMap;
-import com.itblee.repository.key.BuildingKey;
+import com.itblee.repository.query.SqlBuilder;
+import com.itblee.repository.query.SqlMap;
+import com.itblee.repository.query.impl.SqlConditionBuilder;
+import com.itblee.repository.query.impl.SqlConditionMap;
+import com.itblee.repository.query.key.BuildingKey;
 import com.itblee.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,21 +30,23 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public Optional<BuildingDTO> findOne(Long id) {
-        SqlConditionMap<BuildingKey> conditions = new SqlConditionMap<>(BuildingKey.class);
+        SqlMap<BuildingKey> conditions = new SqlConditionMap<>(BuildingKey.class);
         conditions.put(BuildingKey.ALL);
         conditions.put(Collections.singletonMap("id", id));
-        List<Building> result = buildingRepository.findByCondition(conditions);
-        if (result.isEmpty())
+        SqlBuilder builder = SqlConditionBuilder.build(conditions);
+        List<Building> results = buildingRepository.findByCondition(builder);
+        if (results.isEmpty())
             return Optional.empty();
-        return Optional.of(buildingMapper.toDto(result.get(0)));
+        return Optional.of(buildingMapper.toDto(results.get(0)));
     }
 
     @Override
     public List<BuildingSearchResponse> findByCondition(Map<String, Object> params) {
-        SqlConditionMap<BuildingKey> conditions = new SqlConditionMap<>(BuildingKey.class);
+        SqlMap<BuildingKey> conditions = new SqlConditionMap<>(BuildingKey.class);
         conditions.put(BuildingKey.ALL);
         conditions.put(params);
-        List<Building> results = buildingRepository.findByCondition(conditions);
+        SqlBuilder builder = SqlConditionBuilder.build(conditions);
+        List<Building> results = buildingRepository.findByCondition(builder);
         return buildingMapper.toResponse(results);
     }
 
