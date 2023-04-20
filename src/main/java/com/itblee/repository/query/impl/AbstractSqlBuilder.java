@@ -3,6 +3,7 @@ package com.itblee.repository.query.impl;
 import com.itblee.repository.query.ConditionKey;
 import com.itblee.repository.query.SqlBuilder;
 import com.itblee.repository.query.key.SqlJoin;
+import com.itblee.repository.query.key.SqlQuery;
 import com.itblee.utils.StringUtils;
 
 import java.util.*;
@@ -19,7 +20,7 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
         this.typeFlag = type;
     }
 
-    public final static class Range {
+    public static class Range {
         public Number from;
         public Number to;
 
@@ -39,71 +40,108 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
 
     @Override
     public StringBuilder buildFinalQuery() {
-        ConditionKey[] keys = typeFlag.getEnumConstants();
-        if (keys == null || keys.length == 0)
-            throw new IllegalStateException("Illegal state Key.");
-        ConditionKey tar = keys[0].getDefault();
-
         StringBuilder query = new StringBuilder();
         query.append(" SELECT ");
         query.append(buildSelectQuery());
-        query.append(" FROM ").append(tar.getTableName()).append(" ");
+        query.append(" FROM ");
+        query.append(buildFromQuery());
+        query.append(" ");
         query.append(buildJoinQuery());
-        query.append(" WHERE 1 = 1 ");
+        query.append(" WHERE ");
         query.append(buildWhereQuery());
         System.out.println("\n" + query);
         return query;
     }
 
-    @Override
-    public StringBuilder buildSelectQuery(Collection<? extends ConditionKey> keys) {
-        if (keys == null)
-            throw new IllegalArgumentException();
-        Set<String> cols = new LinkedHashSet<>();
-        for (ConditionKey key : keys)
-            cols.addAll(key.props().getSelectColumn());
-        cols.forEach(col -> col = col.trim());
-        cols.removeIf(StringUtils::isBlank);
-        return new StringBuilder(String.join(", ", cols));
+    private StringBuilder format(Set<String> set, String delim) {
+        set.forEach(s -> s = s.trim());
+        set.removeIf(StringUtils::isBlank);
+        return new StringBuilder(String.join(delim, set));
     }
 
     @Override
-    public StringBuilder buildJoinQuery(Collection<? extends ConditionKey> keys) {
-        if (keys == null)
+    public StringBuilder buildSelectQuery(Collection<SqlQuery> queries) {
+        if (queries == null)
             throw new IllegalArgumentException();
-        Set<String> joins = new LinkedHashSet<>();
-        for (ConditionKey key : keys) {
-            for (SqlJoin join : key.props().getJoin()) {
-                if (!StringUtils.isBlank(join.getJoinTable()) && join.getJoinType() != null) {
-                    String sql = join.getJoinType().getKeyword() + " " + join.getJoinTable();
-                    if (!StringUtils.isBlank(join.getJoinON()))
-                        sql += " ON " + join.getJoinON();
-                    joins.add(sql);
+        Set<String> set = new LinkedHashSet<>();
+        for (SqlQuery query : queries)
+            set.addAll(query.getSelectColumn());
+        return format(set, ", ");
+    }
+
+    @Override
+    public StringBuilder buildFromQuery(Collection<SqlQuery> queries) {
+        if (queries == null)
+            throw new IllegalArgumentException();
+        Set<String> set = new LinkedHashSet<>();
+        for (SqlQuery query : queries)
+            set.addAll(query.getFromTable());
+        return format(set, ", ");
+    }
+
+    @Override
+    public StringBuilder buildJoinQuery(Collection<SqlQuery> queries) {
+        if (queries == null)
+            throw new IllegalArgumentException();
+        Set<String> set = new LinkedHashSet<>();
+        for (SqlQuery query : queries) {
+            for (SqlJoin join : query.getJoin()) {
+                SqlJoin.Type type = join.getJoinType();
+                if (type == null || StringUtils.isBlank(type.getKeyword()))
+                    continue;
+                StringBuilder clause = new StringBuilder();
+                clause.append(type.getKeyword()).append(" ");
+
+                if (!join.isNestedJoin()) {
+                    if (!StringUtils.isBlank(join.getJoinTable()))
+                        clause.append(join.getJoinTable());
+                    else continue;
                 }
+                else {
+                    SqlQuery nested = join.getNestedJoin();
+                    if (nested== null)
+                        continue;
+                    List<SqlQuery> one = Collections.singletonList(nested);
+                    clause.append("(SELECT ");
+                    clause.append(buildSelectQuery(one));
+                    clause.append(" FROM ");
+                    clause.append(buildFromQuery(one));
+                    clause.append(" ");
+                    clause.append(buildJoinQuery(one));
+                    if (!StringUtils.isBlank(nested.getWhereColumn()))
+                        clause.append(" WHERE ").append(nested.getWhereColumn());
+                    clause.append(")");
+                    if (!StringUtils.isBlank(nested.getAlias()))
+                        clause.append(" AS ").append(nested.getAlias());
+                }
+
+                if (!StringUtils.isBlank(join.getJoinON()))
+                    clause.append(" ON ").append(join.getJoinON());
+                else continue;
+                set.add(clause.toString());
             }
         }
-        joins.forEach(join -> join = join.trim());
-        return new StringBuilder(String.join(" ", joins));
+        return format(set, " ");
     }
 
     @Override
-    public StringBuilder buildWhereQuery(Map<? extends ConditionKey, Object> map) {
+    public StringBuilder buildWhereQuery(Map<SqlQuery, Object> map) {
         if (map == null)
             throw new IllegalArgumentException();
-        StringBuilder sql = new StringBuilder();
+        Set<String> set = new LinkedHashSet<>();
+        set.add("1=1");
         //convert elements of Map(ConditionKey, value) to query clause after WHERE.
-        for (Map.Entry<? extends ConditionKey, Object> entry : map.entrySet()) {
+        for (Map.Entry<SqlQuery, Object> entry : map.entrySet()) {
             if (entry.getValue() == null)
                 continue;
             StringBuilder clause = new StringBuilder();
-            clause.append("AND ");
 
             //add column name (example: building.name)
-            ConditionKey key = entry.getKey();
-            String whereCol = key.props().getWhereColumn();
-            if (StringUtils.isBlank(whereCol))
-                continue;
-            clause.append(whereCol).append(" ");
+            SqlQuery query = entry.getKey();
+            String whereCol = query.getWhereColumn();
+            if (!StringUtils.isBlank(whereCol))
+                clause.append(whereCol).append(" ");
+            else continue;
 
             //add operator and values (example: building.name like "%abc%")
             final Object val = entry.getValue();
@@ -132,9 +170,9 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
                 else clause.append("BETWEEN ").append(range.from)
                             .append(" AND ").append(range.to);
             } else continue;
-            sql.append(clause);
+            set.add(clause.toString());
         }
-        return sql;
+        return format(set, " AND ");
     }
 
 }

@@ -13,11 +13,6 @@ public class ConditionKeyHolder implements ConditionKey {
     }
 
     @Override
-    public ConditionKey getDefault() {
-        return this;
-    }
-
-    @Override
     public SqlQuery props() {
         return query;
     }
@@ -34,11 +29,6 @@ public class ConditionKeyHolder implements ConditionKey {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getTableName() {
         throw new UnsupportedOperationException();
     }
 }

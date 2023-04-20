@@ -6,19 +6,17 @@ import java.sql.Date;
 
 public enum BuildingKey implements ConditionKey {
 
-    DEFAULT ("building", new SqlQuery() {{
-        select("building.id");
-    }}),
-
     ID ("id", new SqlQuery() {{
         typeOf(Long.class);
         select("building.id");
+        from("building");
         where("building.id");
     }}),
 
     NAME ("name", new SqlQuery() {{
         typeOf(String.class);
         select("building.name");
+        from("building");
         where("building.name");
     }}),
 
@@ -37,18 +35,21 @@ public enum BuildingKey implements ConditionKey {
     WARD ("ward", new SqlQuery() {{
         typeOf(String.class);
         select("building.ward");
+        from("building");
         where("building.ward");
     }}),
 
     LEVEL ("level", new SqlQuery() {{
         typeOf(String.class);
         select("building.level");
+        from("building");
         where("building.level");
     }}),
 
     STREET ("street", new SqlQuery() {{
         typeOf(String.class);
         select("building.street");
+        from("building");
         where("building.street");
     }}),
 
@@ -56,36 +57,42 @@ public enum BuildingKey implements ConditionKey {
     DIRECTION ("direction", new SqlQuery() {{
         typeOf(String.class);
         select("building.direction");
+        from("building");
         where("building.direction");
     }}),
 
     RENT_PRICE("rentprice", true, new SqlQuery() {{
         typeOf(Integer.class);
         select("building.rentprice");
+        from("building");
         where("building.rentprice");
     }}),
 
     FLOOR_AREA ("floorarea", new SqlQuery() {{
         typeOf(Integer.class);
         select("building.floorarea");
+        from("building");
         where("building.floorarea");
     }}),
 
     MANAGER_NAME ("managername", new SqlQuery() {{
         typeOf(String.class);
         select("building.managername");
+        from("building");
         where("building.managername");
     }}),
 
     MANAGER_PHONE ("managerphone", new SqlQuery() {{
         typeOf(String.class);
         select("building.managerphone");
+        from("building");
         where("building.managerphone");
     }}),
 
     NUMBER_OF_BASEMENT ("numberofbasement", new SqlQuery() {{
         typeOf(Integer.class);
         select("building.numberofbasement");
+        from("building");
         where("building.numberofbasement");
     }}),
 
@@ -123,17 +130,31 @@ public enum BuildingKey implements ConditionKey {
         typeOf(Long.class);
         select("ur.id AS \"userID\"",
                 "ur.fullname AS \"userFullName\"");
-        joinWith(new SqlJoin() {{
+        joinWith(
+                new SqlJoin() {{
             type(SqlJoin.Type.LEFT_JOIN);
             join("assignmentbuilding");
             on("building.id = assignmentbuilding.buildingid");
         }},
                 new SqlJoin() {{
             type(SqlJoin.Type.LEFT_JOIN);
-            join("(SELECT user.id, user.fullname " +
-                    "FROM user LEFT JOIN user_role ON user.id = user_role.userid " +
-                    "LEFT JOIN role ON role.id = user_role.roleid " +
-                    "WHERE role.code = \"staff\") AS ur ");
+            join(new SqlQuery() {{
+                select("user.id", "user.fullname");
+                from("user");
+                joinWith(
+                        new SqlJoin() {{
+                    type(SqlJoin.Type.LEFT_JOIN);
+                    join("user_role");
+                    on("user.id = user_role.userid");
+                }},
+                        new SqlJoin() {{
+                    type(SqlJoin.Type.LEFT_JOIN);
+                    join("role");
+                    on("role.id = user_role.roleid");
+                }});
+                where("role.code = \"staff\"");
+                as("ur");
+            }});
             on("ur.id = assignmentbuilding.staffid");
         }});
         where("ur.id");
@@ -250,6 +271,7 @@ public enum BuildingKey implements ConditionKey {
                 "ur.id AS \"userID\"",
                 "ur.fullname AS \"userFullName\""
         );
+        from("building");
         joinWith(new SqlJoin() {{
                      type(SqlJoin.Type.LEFT_JOIN);
                      join("district");
@@ -277,10 +299,23 @@ public enum BuildingKey implements ConditionKey {
                 }},
                 new SqlJoin() {{
                     type(SqlJoin.Type.LEFT_JOIN);
-                    join("(SELECT user.id, user.fullname " +
-                            "FROM user LEFT JOIN user_role ON user.id = user_role.userid " +
-                            "LEFT JOIN role ON role.id = user_role.roleid " +
-                            "WHERE role.code = \"staff\") AS ur");
+                    join(new SqlQuery() {{
+                        select("user.id", "user.fullname");
+                        from("user");
+                        joinWith(
+                            new SqlJoin() {{
+                                type(SqlJoin.Type.LEFT_JOIN);
+                                join("user_role");
+                                on("user.id = user_role.userid");
+                            }},
+                            new SqlJoin() {{
+                                type(SqlJoin.Type.LEFT_JOIN);
+                                join("role");
+                                on("role.id = user_role.roleid");
+                            }});
+                        where("role.code = \"staff\"");
+                        as("ur");
+                    }});
                     on("ur.id = assignmentbuilding.staffid");
                 }}
         );
@@ -315,11 +350,6 @@ public enum BuildingKey implements ConditionKey {
     }
 
     @Override
-    public ConditionKey getDefault() {
-        return DEFAULT;
-    }
-
-    @Override
     public SqlQuery props() {
         return query;
     }
@@ -335,12 +365,7 @@ public enum BuildingKey implements ConditionKey {
 
     @Override
     public String getName() {
-        return getTableName() + " " + this.name().toLowerCase();
-    }
-
-    @Override
-    public String getTableName() {
-        return DEFAULT.getParam();
+        return "Building - " + this.name().toLowerCase();
     }
 
 }

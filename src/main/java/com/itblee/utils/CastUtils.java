@@ -11,7 +11,7 @@ public final class CastUtils {
 
     public static <T> Optional<T> cast(final Object o, Class<T> cls) {
         if (cls == null)
-            throw new IllegalArgumentException("Couldn't cast to null");
+            throw new IllegalArgumentException("Couldn't cast to null.");
         if (o == null)
             return Optional.empty();
         if (cls.isInstance(o))

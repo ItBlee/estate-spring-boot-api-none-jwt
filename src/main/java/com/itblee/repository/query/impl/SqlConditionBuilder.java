@@ -3,21 +3,26 @@ package com.itblee.repository.query.impl;
 import com.itblee.repository.query.ConditionKey;
 import com.itblee.repository.query.SqlBuilder;
 import com.itblee.repository.query.SqlMap;
+import com.itblee.repository.query.key.SqlQuery;
 
-import java.util.Objects;
+import java.util.*;
 
 public class SqlConditionBuilder extends AbstractSqlBuilder implements SqlBuilder {
 
-    private final SqlMap<? extends ConditionKey> map;
+    private final Map<SqlQuery, Object> map = new LinkedHashMap<>();
 
-    private SqlConditionBuilder(SqlMap<? extends ConditionKey> conditions) {
-        super(conditions.getType());
-        this.map = conditions;
+    private SqlConditionBuilder(Class<? extends ConditionKey> type) {
+        super(type);
     }
 
     @Override
     public StringBuilder buildSelectQuery() {
         return buildSelectQuery(map.keySet());
+    }
+
+    @Override
+    public StringBuilder buildFromQuery() {
+        return buildFromQuery(map.keySet());
     }
 
     @Override
@@ -30,10 +35,16 @@ public class SqlConditionBuilder extends AbstractSqlBuilder implements SqlBuilde
         return buildWhereQuery(map);
     }
 
+    public Map<SqlQuery, Object> getMap() {
+        return map;
+    }
+
     public static SqlBuilder build(SqlMap<? extends ConditionKey> conditions) {
         if (conditions == null)
             throw new IllegalArgumentException();
-        return new SqlConditionBuilder(conditions);
+        SqlConditionBuilder builder = new SqlConditionBuilder(conditions.getType());
+        conditions.forEach((key, val) -> builder.getMap().put(key.props(), val));
+        return builder;
     }
 
     @Override

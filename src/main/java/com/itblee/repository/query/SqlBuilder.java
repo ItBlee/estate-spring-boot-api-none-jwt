@@ -1,5 +1,7 @@
 package com.itblee.repository.query;
 
+import com.itblee.repository.query.key.SqlQuery;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -7,11 +9,14 @@ public interface SqlBuilder {
     StringBuilder buildFinalQuery();
 
     StringBuilder buildSelectQuery();
-    StringBuilder buildSelectQuery(Collection<? extends ConditionKey> keys);
+    StringBuilder buildSelectQuery(Collection<SqlQuery> queries);
+
+    StringBuilder buildFromQuery();
+    StringBuilder buildFromQuery(Collection<SqlQuery> queries);
 
     StringBuilder buildJoinQuery();
-    StringBuilder buildJoinQuery(Collection<? extends ConditionKey> keys);
+    StringBuilder buildJoinQuery(Collection<SqlQuery> queries);
 
     StringBuilder buildWhereQuery();
-    StringBuilder buildWhereQuery(Map<? extends ConditionKey, Object> map);
+    StringBuilder buildWhereQuery(Map<SqlQuery, Object> map);
 }
