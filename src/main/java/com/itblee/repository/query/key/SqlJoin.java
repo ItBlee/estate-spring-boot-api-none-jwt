@@ -22,35 +22,32 @@ public class SqlJoin {
         }
     }
 
-    private String joinTable;
-    private SqlQuery nestedJoin;
+    private SqlQuery joinTable;
     private String joinON;
     private Type joinType;
 
     public SqlJoin() {
     }
 
-    public String getJoinTable() {
+    public SqlQuery getJoinTable() {
         return joinTable;
     }
 
-    public SqlQuery getNestedJoin() {
-        return nestedJoin;
+    public SqlJoin join(String joinTable) {
+        if (this.joinTable == null)
+            this.joinTable = new SqlQuery() {{
+                from(joinTable);
+            }};
+        else throw new IllegalStateException("Already set !");
+        return this;
     }
 
-    public SqlJoin join(String joinTable) {
-        if (this.joinTable == null && this.nestedJoin == null)
+    public SqlJoin join(SqlQuery joinTable) {
+        if (this.joinTable == null)
             this.joinTable = joinTable;
         else throw new IllegalStateException("Already set !");
         return this;
     }
-    public SqlJoin join(SqlQuery nestedJoin) {
-        if (this.nestedJoin == null && this.joinTable == null)
-            this.nestedJoin = nestedJoin;
-        else throw new IllegalStateException("Already set !");
-        return this;
-    }
-
 
     public String getJoinON() {
         if (this.joinON == null)
@@ -76,10 +73,6 @@ public class SqlJoin {
             this.joinType = joinType;
         else throw new IllegalStateException("Already set !");
         return this;
-    }
-
-    public boolean isNestedJoin() {
-        return nestedJoin != null && joinTable == null;
     }
 
     @Override

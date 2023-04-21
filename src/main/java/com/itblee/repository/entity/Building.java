@@ -1,4 +1,4 @@
-package com.itblee.entity;
+package com.itblee.repository.entity;
 
 import java.util.HashSet;
 import java.util.Set;

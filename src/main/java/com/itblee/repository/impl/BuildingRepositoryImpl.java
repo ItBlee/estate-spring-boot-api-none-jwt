@@ -1,6 +1,6 @@
 package com.itblee.repository.impl;
 
-import com.itblee.entity.Building;
+import com.itblee.repository.entity.Building;
 import com.itblee.mapper.BuildingMapper;
 import com.itblee.repository.BuildingRepository;
 import com.itblee.repository.query.SqlBuilder;

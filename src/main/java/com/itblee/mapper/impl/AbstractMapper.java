@@ -1,6 +1,6 @@
 package com.itblee.mapper.impl;
 
-import com.itblee.entity.BaseEntity;
+import com.itblee.repository.entity.BaseEntity;
 import com.itblee.mapper.ModelMapper;
 import com.itblee.mapper.ResultSetExtractor;
 import com.itblee.mapper.RowMapper;

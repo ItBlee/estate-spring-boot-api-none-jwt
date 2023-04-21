@@ -1,4 +1,4 @@
-package com.itblee.entity;
+package com.itblee.repository.entity;
 
 public class RentArea extends BaseEntityAudit {
     private Integer value;

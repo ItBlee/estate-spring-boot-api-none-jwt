@@ -54,9 +54,37 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
     }
 
     private StringBuilder format(Set<String> set, String delim) {
+        if (set.isEmpty())
+            throw new IllegalStateException("Wrong query structure.");
         set.forEach(s -> s = s.trim());
         set.removeIf(StringUtils::isBlank);
         return new StringBuilder(String.join(delim, set));
+    }
+
+    private Optional<String> buildQueryTable(SqlQuery queryTable) {
+        StringBuilder clause = new StringBuilder();
+        if (queryTable == null || queryTable.getFromTable().isEmpty())
+            return Optional.empty();
+        List<SqlQuery> one = Collections.singletonList(queryTable);
+        if (!queryTable.getSelectColumn().isEmpty())  {
+            clause.append("(SELECT ");
+            clause.append(buildSelectQuery(one));
+            clause.append(" FROM ");
+            clause.append(buildFromQuery(one));
+            clause.append(" ");
+            clause.append(buildJoinQuery(one));
+            if (!StringUtils.isBlank(queryTable.getWhereColumn()))
+                clause.append(" WHERE ").append(queryTable.getWhereColumn());
+            clause.append(")");
+            if (!StringUtils.isBlank(queryTable.getAlias()))
+                clause.append(" AS ").append(queryTable.getAlias());
+        } else {
+            Optional<String> from = queryTable.getFromTable().stream().findFirst();
+            if (from.isPresent())
+                clause.append(from.get());
+            else return Optional.empty();
+        }
+        return Optional.of(clause.toString());
     }
 
     @Override
@@ -69,13 +97,18 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
         return format(set, ", ");
     }
 
+
     @Override
     public StringBuilder buildFromQuery(Collection<SqlQuery> queries) {
         if (queries == null)
             throw new IllegalArgumentException();
         Set<String> set = new LinkedHashSet<>();
-        for (SqlQuery query : queries)
-            set.addAll(query.getFromTable());
+        for (SqlQuery query : queries) {
+            if (query.isFromQueryTable())
+                for (SqlQuery q : query.getFromQueryTable())
+                    buildQueryTable(q).ifPresent(set::add);
+            else set.addAll(query.getFromTable());
+        }
         return format(set, ", ");
     }
 
@@ -92,28 +125,10 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
                 StringBuilder clause = new StringBuilder();
                 clause.append(type.getKeyword()).append(" ");
 
-                if (!join.isNestedJoin()) {
-                    if (!StringUtils.isBlank(join.getJoinTable()))
-                        clause.append(join.getJoinTable());
-                    else continue;
-                }
-                else {
-                    SqlQuery nested = join.getNestedJoin();
-                    if (nested== null)
-                        continue;
-                    List<SqlQuery> one = Collections.singletonList(nested);
-                    clause.append("(SELECT ");
-                    clause.append(buildSelectQuery(one));
-                    clause.append(" FROM ");
-                    clause.append(buildFromQuery(one));
-                    clause.append(" ");
-                    clause.append(buildJoinQuery(one));
-                    if (!StringUtils.isBlank(nested.getWhereColumn()))
-                        clause.append(" WHERE ").append(nested.getWhereColumn());
-                    clause.append(")");
-                    if (!StringUtils.isBlank(nested.getAlias()))
-                        clause.append(" AS ").append(nested.getAlias());
-                }
+                Optional<String> joinTable = buildQueryTable(join.getJoinTable());
+                if (joinTable.isPresent())
+                    clause.append(joinTable.get());
+                else continue;
 
                 if (!StringUtils.isBlank(join.getJoinON()))
                     clause.append(" ON ").append(join.getJoinON());
@@ -152,7 +167,7 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
             } else if (val instanceof Number) {
                 clause.append("= ").append(val);
             } else if (val.getClass().isArray()) {
-                List<String> list = new ArrayList<>();
+                List<String> list = new LinkedList<>();
                 for (Object o : (Object[]) val) {
                     String s = o.toString();
                     if (o instanceof CharSequence)

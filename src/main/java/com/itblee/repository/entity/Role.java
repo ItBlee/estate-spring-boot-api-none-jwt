@@ -1,11 +1,11 @@
-package com.itblee.entity;
+package com.itblee.repository.entity;
 
-public abstract class BaseEntityCode extends BaseEntity {
+public class Role extends BaseEntityAudit {
 
     private String name;
     private String code;
 
-    public BaseEntityCode() {
+    public Role() {
     }
 
     public String getName() {

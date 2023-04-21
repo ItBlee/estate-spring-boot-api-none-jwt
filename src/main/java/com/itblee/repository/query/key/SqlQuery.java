@@ -7,6 +7,7 @@ public class SqlQuery {
     private Class<?> type;
     private Set<String> selectColumn;
     private Set<String> fromTable;
+    private Set<SqlQuery> fromQueryTable;
     private Set<SqlJoin> join;
     private String whereColumn;
     private String alias;
@@ -48,10 +49,25 @@ public class SqlQuery {
         return fromTable;
     }
 
+    public Set<SqlQuery> getFromQueryTable() {
+        if (fromQueryTable == null)
+            fromQueryTable = Collections.emptySet();
+        return fromQueryTable;
+    }
+
     public SqlQuery from(String... fromTable) {
-        if (this.fromTable == null)
+        if (this.fromTable == null && this.fromQueryTable == null)
             this.fromTable = Collections.unmodifiableSet(
                     new LinkedHashSet<>(Arrays.asList(fromTable))
+            );
+        else throw new IllegalStateException("Already set !");
+        return this;
+    }
+
+    public SqlQuery from(SqlQuery... fromQueryTable) {
+        if (this.fromQueryTable == null && this.fromTable == null)
+            this.fromQueryTable = Collections.unmodifiableSet(
+                    new LinkedHashSet<>(Arrays.asList(fromQueryTable))
             );
         else throw new IllegalStateException("Already set !");
         return this;
@@ -96,6 +112,10 @@ public class SqlQuery {
             this.alias = alias;
         else throw new IllegalStateException("Already set !");
         return this;
+    }
+
+    public boolean isFromQueryTable() {
+        return fromQueryTable != null && fromTable == null;
     }
 
     @Override
