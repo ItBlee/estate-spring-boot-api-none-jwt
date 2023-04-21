@@ -12,7 +12,7 @@ public final class MapUtils {
         return map.getOrDefault(key, null);
     }
 
-    public static <E> E get(Map<?, ?> map, Object key, Class<E> e) {
+    public static <T> T get(Map<?, ?> map, Object key, Class<T> e) {
         Object val = get(map, key);
         if (val == null)
             return null;

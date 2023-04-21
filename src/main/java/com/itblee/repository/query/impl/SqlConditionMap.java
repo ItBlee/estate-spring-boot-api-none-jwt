@@ -39,18 +39,18 @@ public class SqlConditionMap<K extends ConditionKey> extends LinkedHashMap<K, Ob
         if (value == null)
             return null;
         check(key);
-        Optional<?> cast = CastUtils.cast(value, key.props().getType());
+        Optional<?> cast = CastUtils.cast(value, key.getType());
         if (!cast.isPresent())
-            return null;
+            throw new BadRequestException("Value of " + key.getName() + " invalid !");
         Object o = cast.get();
         if (o instanceof CharSequence && StringUtils.isBlank((String) value))
-            throw new IllegalStateException("Value of " + key.getName() + " invalid !");
+            throw new BadRequestException("Value of " + key.getName() + " invalid !");
         if (o instanceof CharSequence[]) {
             String[] notBlankArr = Arrays.stream((String[]) o)
                     .filter(StringUtils::isNotBlank)
                     .toArray(String[]::new);
             if (notBlankArr.length == 0)
-                throw new IllegalStateException("Value of " + key.getName() + " invalid !");
+                throw new BadRequestException("Value of " + key.getName() + " invalid !");
             o = notBlankArr;
         }
         return super.put(key, o);
@@ -62,22 +62,22 @@ public class SqlConditionMap<K extends ConditionKey> extends LinkedHashMap<K, Ob
             return null;
         check(key);
         try {
-            Number from = (Number) CastUtils.cast(fromValue, key.props().getType()).orElse(null);
-            Number to = (Number) CastUtils.cast(toValue, key.props().getType()).orElse(null);
+            Number from = (Number) CastUtils.cast(fromValue, key.getType()).orElse(null);
+            Number to = (Number) CastUtils.cast(toValue, key.getType()).orElse(null);
             return put(key, AbstractSqlBuilder.Range.newRange(from, to));
         } catch (IllegalArgumentException e) {
-            throw new IllegalStateException("Value of " + key.getName() + " invalid: " + e.getMessage(), e);
+            throw new BadRequestException("Value of " + key.getName() + " invalid: " + e.getMessage());
         } catch (IllegalStateException ignored) {
             return null;
         }
     }
 
     @Override
-    public Object put(Map<String, Object> params) {
+    public void put(Map<String, Object> params) {
         if (params == null)
             throw new IllegalArgumentException();
         if (params.isEmpty())
-            return null;
+            return;
         Map<String, ConditionKey> keyMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ConditionKey key : typeFlag.getEnumConstants()) {
             if (key.getParam() != null)
@@ -86,17 +86,12 @@ public class SqlConditionMap<K extends ConditionKey> extends LinkedHashMap<K, Ob
         for (Map.Entry<String, Object> param : params.entrySet()) {
             K key = MapUtils.get(keyMap, param.getKey(), typeFlag);
             if (key == null)
-                continue;
-            try {
-                if (key.isRange())
-                    return put(key, MapUtils.get(params, key.getParam() + "from"),
-                            MapUtils.get(params, key.getParam() + "to"));
-                else return put(key, MapUtils.get(params, key.getParam()));
-            } catch (IllegalStateException e) {
-                throw new BadRequestException(e);
-            }
+                throw new BadRequestException("Param " + param.getKey() + " unsupported.");
+            if (!key.isRange())
+                put(key, MapUtils.get(params, key.getParam()));
+            else put(key, MapUtils.get(params, key.getParam() + "from"),
+                    MapUtils.get(params, key.getParam() + "to"));
         }
-        return null;
     }
 
     @Override

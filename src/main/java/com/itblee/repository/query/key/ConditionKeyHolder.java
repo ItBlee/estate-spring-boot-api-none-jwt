@@ -19,7 +19,7 @@ public class ConditionKeyHolder implements ConditionKey {
 
     @Override
     public String getParam() {
-        return null;
+    	throw new UnsupportedOperationException();
     }
 
     @Override
@@ -31,4 +31,9 @@ public class ConditionKeyHolder implements ConditionKey {
     public String getName() {
         throw new UnsupportedOperationException();
     }
+
+	@Override
+	public Class<?> getType() {
+		throw new UnsupportedOperationException();
+	}
 }

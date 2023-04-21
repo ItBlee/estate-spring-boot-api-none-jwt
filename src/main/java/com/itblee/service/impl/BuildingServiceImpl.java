@@ -1,13 +1,11 @@
 package com.itblee.service.impl;
 
-import com.itblee.repository.entity.Building;
 import com.itblee.mapper.BuildingMapper;
 import com.itblee.model.dto.BuildingDTO;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.repository.query.SqlBuilder;
+import com.itblee.repository.entity.Building;
 import com.itblee.repository.query.SqlMap;
-import com.itblee.repository.query.impl.SqlConditionBuilder;
 import com.itblee.repository.query.impl.SqlConditionMap;
 import com.itblee.repository.query.key.BuildingKey;
 import com.itblee.service.BuildingService;
@@ -33,8 +31,7 @@ public class BuildingServiceImpl implements BuildingService {
         SqlMap<BuildingKey> conditions = new SqlConditionMap<>(BuildingKey.class);
         conditions.put(BuildingKey.ALL);
         conditions.put(Collections.singletonMap("id", id));
-        SqlBuilder builder = SqlConditionBuilder.build(conditions);
-        List<Building> results = buildingRepository.findByCondition(builder);
+        List<Building> results = buildingRepository.findByCondition(conditions);
         if (results.isEmpty())
             return Optional.empty();
         return Optional.of(buildingMapper.toDto(results.get(0)));
@@ -45,8 +42,7 @@ public class BuildingServiceImpl implements BuildingService {
         SqlMap<BuildingKey> conditions = new SqlConditionMap<>(BuildingKey.class);
         conditions.put(BuildingKey.ALL);
         conditions.put(params);
-        SqlBuilder builder = SqlConditionBuilder.build(conditions);
-        List<Building> results = buildingRepository.findByCondition(builder);
+        List<Building> results = buildingRepository.findByCondition(conditions);
         return buildingMapper.toResponse(results);
     }
 

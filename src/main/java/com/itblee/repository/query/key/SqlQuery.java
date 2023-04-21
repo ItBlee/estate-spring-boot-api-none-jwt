@@ -4,7 +4,7 @@ import java.util.*;
 
 public class SqlQuery {
 
-    private Class<?> type;
+
     private Set<String> selectColumn;
     private Set<String> fromTable;
     private Set<SqlQuery> fromQueryTable;
@@ -13,19 +13,6 @@ public class SqlQuery {
     private String alias;
 
     public SqlQuery() {
-    }
-
-    public Class<?> getType() {
-        if (this.type == null)
-            this.type = Object.class;
-        return type;
-    }
-
-    public SqlQuery typeOf(Class<?> type) {
-        if (this.type == null)
-            this.type = type;
-        else throw new IllegalStateException("Already set !");
-        return this;
     }
 
     public Set<String> getSelectColumn() {
@@ -123,14 +110,13 @@ public class SqlQuery {
         if (this == o) return true;
         if (!(o instanceof SqlQuery)) return false;
         SqlQuery sqlQuery = (SqlQuery) o;
-        return Objects.equals(getType(), sqlQuery.getType())
-                && Objects.equals(getSelectColumn(), sqlQuery.getSelectColumn())
+        return Objects.equals(getSelectColumn(), sqlQuery.getSelectColumn())
                 && Objects.equals(getJoin(), sqlQuery.getJoin())
                 && Objects.equals(getWhereColumn(), sqlQuery.getWhereColumn());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getType(), getSelectColumn(), getJoin(), getWhereColumn());
+        return Objects.hash(getSelectColumn(), getJoin(), getWhereColumn());
     }
 }

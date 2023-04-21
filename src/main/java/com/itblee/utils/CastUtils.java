@@ -11,7 +11,7 @@ public final class CastUtils {
 
     public static <T> Optional<T> cast(final Object o, Class<T> cls) {
         if (cls == null)
-            throw new IllegalArgumentException("Couldn't cast to null.");
+            throw new ClassCastException("Couldn't cast to null.");
         if (o == null)
             return Optional.empty();
         if (cls.isInstance(o))
@@ -29,7 +29,7 @@ public final class CastUtils {
             Object[] arr = ((Collection<?>) o).toArray();
             str = String.join(STRING_DELIMITER, Arrays.copyOf(arr, arr.length, String[].class));
         } else {
-            throw new IllegalArgumentException("Cast type not supported yet.");
+            throw new ClassCastException("Cast type not supported yet.");
         }
         if (StringUtils.isBlank(str))
             return Optional.empty();
@@ -47,7 +47,7 @@ public final class CastUtils {
             }else if (cls.isAssignableFrom(Date.class)) {
                 obj = Date.valueOf(str);
             } else {
-                throw new IllegalArgumentException("Cast to " + cls.getSimpleName() + " not supported yet.");
+                throw new ClassCastException("Cast to " + cls.getSimpleName() + " not supported yet.");
             }
             return Optional.of(cls.cast(obj));
         } catch (NumberFormatException e) {

@@ -32,7 +32,7 @@ public abstract class AbstractMapper<T extends BaseEntity> implements ResultSetE
                 merge fail -> Illegal exception*/
                 obj = mergeRow(row, obj);
                 map.put(obj.getId(), obj);
-            } catch (IllegalArgumentException ignored) {}
+            } catch (IllegalStateException ignored) {}
         }
         return new ArrayList<>(map.values());
     }
@@ -60,16 +60,17 @@ public abstract class AbstractMapper<T extends BaseEntity> implements ResultSetE
                     methods.add(method);
             }
             Map<String, ConditionKey> keyMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-            for (ConditionKey key : keyClass.getEnumConstants())
+            for (ConditionKey key : keyClass.getEnumConstants()) {
                 if (key.getParam() != null)
                     keyMap.put(key.getParam(), key);
+            }
             for (Method method : methods) {
                 String paramName = StringUtils.formatAlphaOnly(method.getName())
                         .replaceFirst(SET_KEYWORD, "")
                         .toLowerCase();
                 ConditionKey key = keyMap.get(paramName);
                 if (key != null)
-                    method.invoke(instance, get(row, key.getParam(), key.props().getType()));
+                    method.invoke(instance, get(row, key.getParam(), key.getType()));
             }
             return Optional.of(instance);
         } catch (Exception e) {
