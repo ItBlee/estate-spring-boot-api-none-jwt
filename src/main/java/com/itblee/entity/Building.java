@@ -1,9 +1,11 @@
-package com.itblee.repository.entity;
+package com.itblee.entity;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class Building extends BaseEntityAudit {
+
+    private static final long serialVersionUID = 4499222508663949510L;
 
     private String name;
     private String street;

@@ -1,6 +1,8 @@
-package com.itblee.repository.entity;
+package com.itblee.entity;
 
 public abstract class BaseEntityCode extends BaseEntity {
+
+    private static final long serialVersionUID = -3444372930356889500L;
 
     private String name;
     private String code;

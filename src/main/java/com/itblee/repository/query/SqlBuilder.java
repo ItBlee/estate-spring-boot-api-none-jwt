@@ -1,22 +1,23 @@
 package com.itblee.repository.query;
 
-import com.itblee.repository.query.key.SqlQuery;
+import com.itblee.repository.query.bean.SqlQuery;
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.Collection;
 import java.util.Map;
 
 public interface SqlBuilder {
-    StringBuilder buildFinalQuery();
+    StringBuilder buildFinalQuery() throws SQLSyntaxErrorException;
 
-    StringBuilder buildSelectQuery();
-    StringBuilder buildSelectQuery(Collection<SqlQuery> queries);
+    StringBuilder buildSelectQuery() throws SQLSyntaxErrorException;
+    StringBuilder buildSelectQuery(Collection<SqlQuery> queries) throws SQLSyntaxErrorException;
 
-    StringBuilder buildFromQuery();
-    StringBuilder buildFromQuery(Collection<SqlQuery> queries);
+    StringBuilder buildFromQuery() throws SQLSyntaxErrorException;
+    StringBuilder buildFromQuery(Collection<SqlQuery> queries) throws SQLSyntaxErrorException;
 
-    StringBuilder buildJoinQuery();
-    StringBuilder buildJoinQuery(Collection<SqlQuery> queries);
+    StringBuilder buildJoinQuery() throws SQLSyntaxErrorException;
+    StringBuilder buildJoinQuery(Collection<SqlQuery> queries) throws SQLSyntaxErrorException;
 
-    StringBuilder buildWhereQuery();
-    StringBuilder buildWhereQuery(Map<SqlQuery, Object> map);
+    StringBuilder buildWhereQuery() throws SQLSyntaxErrorException;
+    StringBuilder buildWhereQuery(Map<SqlQuery, Object> map) throws SQLSyntaxErrorException;
 }

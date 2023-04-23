@@ -1,6 +1,6 @@
 package com.itblee.mapper;
 
-import com.itblee.repository.entity.Building;
+import com.itblee.entity.Building;
 import com.itblee.model.dto.BuildingDTO;
 import com.itblee.model.response.BuildingSearchResponse;
 

@@ -14,8 +14,6 @@ public final class ConnectionUtils {
 
     private static MysqlDataSource dbSource;
 
-    private ConnectionUtils() {}
-
     public static MysqlDataSource getDataSource() {
         if (dbSource == null)
             dbSource = new MysqlDataSource();
@@ -58,6 +56,8 @@ public final class ConnectionUtils {
         }
     }
 
-
+    private ConnectionUtils() {
+        throw new AssertionError();
+    }
 
 }

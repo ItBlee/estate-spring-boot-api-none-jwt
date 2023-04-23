@@ -1,9 +1,12 @@
-package com.itblee.repository.entity;
+package com.itblee.entity;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class User extends BaseEntityAudit {
+
+    private static final long serialVersionUID = -4614466784491490067L;
+
     private String username;
     private String password;
     private String fullName;

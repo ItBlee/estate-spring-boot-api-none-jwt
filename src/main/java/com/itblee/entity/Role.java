@@ -1,6 +1,8 @@
-package com.itblee.repository.entity;
+package com.itblee.entity;
 
 public class Role extends BaseEntityAudit {
+
+    private static final long serialVersionUID = 8813280777538544796L;
 
     private String name;
     private String code;

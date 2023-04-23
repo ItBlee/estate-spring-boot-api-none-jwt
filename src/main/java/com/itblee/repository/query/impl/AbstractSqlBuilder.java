@@ -1,45 +1,19 @@
 package com.itblee.repository.query.impl;
 
-import com.itblee.repository.query.ConditionKey;
+import com.itblee.repository.query.bean.Code;
+import com.itblee.repository.query.bean.Range;
 import com.itblee.repository.query.SqlBuilder;
-import com.itblee.repository.query.key.SqlJoin;
-import com.itblee.repository.query.key.SqlQuery;
+import com.itblee.repository.query.bean.SqlJoin;
+import com.itblee.repository.query.bean.SqlQuery;
 import com.itblee.utils.StringUtils;
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.*;
 
 public abstract class AbstractSqlBuilder implements SqlBuilder {
 
-    protected final Class<? extends ConditionKey> typeFlag;
-
-    protected AbstractSqlBuilder(Class<? extends ConditionKey> type) {
-        if (type == null)
-            throw new IllegalArgumentException("Type required");
-        if (type.getEnumConstants().length == 0)
-            throw new IllegalStateException("Invalid key with no enum.");
-        this.typeFlag = type;
-    }
-
-    public static class Range {
-        public Number from;
-        public Number to;
-
-        private Range(Number from, Number to) {
-            this.from = from;
-            this.to = to;
-        }
-
-        public static Range newRange(Number from, Number to) {
-            if ((from == null && to == null))
-                throw new IllegalStateException();
-            if (from != null && to != null && from.doubleValue() > to.doubleValue())
-                throw new IllegalArgumentException("FROM value is greater than TO value");
-            return new Range(from, to);
-        }
-    }
-
     @Override
-    public StringBuilder buildFinalQuery() {
+    public StringBuilder buildFinalQuery() throws SQLSyntaxErrorException {
         StringBuilder query = new StringBuilder();
         query.append(" SELECT ");
         query.append(buildSelectQuery());
@@ -54,19 +28,18 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
     }
 
     private StringBuilder format(Set<String> set, String delim) {
-        if (set.isEmpty())
-            throw new IllegalStateException("Wrong query structure.");
         set.forEach(s -> s = s.trim());
         set.removeIf(StringUtils::isBlank);
         return new StringBuilder(String.join(delim, set));
     }
 
-    private Optional<String> buildQueryTable(SqlQuery queryTable) {
+    private String buildQueryTable(SqlQuery queryTable) throws SQLSyntaxErrorException {
+        if (queryTable == null)
+            throw new IllegalArgumentException();
         StringBuilder clause = new StringBuilder();
-        if (queryTable == null || queryTable.getFromTable().isEmpty())
-            return Optional.empty();
-        List<SqlQuery> one = Collections.singletonList(queryTable);
-        if (!queryTable.getSelectColumn().isEmpty())  {
+        if (!queryTable.getSelectColumn().isEmpty()
+            && !queryTable.getFromTable().isEmpty())  {
+            List<SqlQuery> one = Collections.singletonList(queryTable);
             clause.append("(SELECT ");
             clause.append(buildSelectQuery(one));
             clause.append(" FROM ");
@@ -82,38 +55,42 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
             Optional<String> from = queryTable.getFromTable().stream().findFirst();
             if (from.isPresent())
                 clause.append(from.get());
-            else return Optional.empty();
+            else throw new SQLSyntaxErrorException("Invalid query.");
         }
-        return Optional.of(clause.toString());
+        return clause.toString();
     }
 
     @Override
-    public StringBuilder buildSelectQuery(Collection<SqlQuery> queries) {
+    public StringBuilder buildSelectQuery(Collection<SqlQuery> queries) throws SQLSyntaxErrorException {
         if (queries == null)
             throw new IllegalArgumentException();
         Set<String> set = new LinkedHashSet<>();
         for (SqlQuery query : queries)
             set.addAll(query.getSelectColumn());
+        if (set.isEmpty())
+            throw new SQLSyntaxErrorException("Wrong query structure.");
         return format(set, ", ");
     }
 
 
     @Override
-    public StringBuilder buildFromQuery(Collection<SqlQuery> queries) {
+    public StringBuilder buildFromQuery(Collection<SqlQuery> queries) throws SQLSyntaxErrorException {
         if (queries == null)
             throw new IllegalArgumentException();
         Set<String> set = new LinkedHashSet<>();
         for (SqlQuery query : queries) {
             if (query.isFromQueryTable())
                 for (SqlQuery q : query.getFromQueryTable())
-                    buildQueryTable(q).ifPresent(set::add);
+                    set.add(buildQueryTable(q));
             else set.addAll(query.getFromTable());
         }
+        if (set.isEmpty())
+            throw new SQLSyntaxErrorException("Wrong query structure.");
         return format(set, ", ");
     }
 
     @Override
-    public StringBuilder buildJoinQuery(Collection<SqlQuery> queries) {
+    public StringBuilder buildJoinQuery(Collection<SqlQuery> queries) throws SQLSyntaxErrorException {
         if (queries == null)
             throw new IllegalArgumentException();
         Set<String> set = new LinkedHashSet<>();
@@ -121,18 +98,13 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
             for (SqlJoin join : query.getJoin()) {
                 SqlJoin.Type type = join.getJoinType();
                 if (type == null || StringUtils.isBlank(type.getKeyword()))
-                    continue;
+                    throw new SQLSyntaxErrorException("Invalid Join type.");
                 StringBuilder clause = new StringBuilder();
                 clause.append(type.getKeyword()).append(" ");
-
-                Optional<String> joinTable = buildQueryTable(join.getJoinTable());
-                if (joinTable.isPresent())
-                    clause.append(joinTable.get());
-                else continue;
-
-                if (!StringUtils.isBlank(join.getJoinON()))
-                    clause.append(" ON ").append(join.getJoinON());
-                else continue;
+                clause.append(buildQueryTable(join.getJoinTable()));
+                if (StringUtils.isBlank(join.getJoinON()))
+                    throw new SQLSyntaxErrorException("Missing ON clause in Join.");
+                clause.append(" ON ").append(join.getJoinON());
                 set.add(clause.toString());
             }
         }
@@ -140,30 +112,29 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
     }
 
     @Override
-    public StringBuilder buildWhereQuery(Map<SqlQuery, Object> map) {
+    public StringBuilder buildWhereQuery(Map<SqlQuery, Object> map) throws SQLSyntaxErrorException {
         if (map == null)
             throw new IllegalArgumentException();
         Set<String> set = new LinkedHashSet<>();
         set.add("1=1");
         //convert elements of Map(ConditionKey, value) to query clause after WHERE.
         for (Map.Entry<SqlQuery, Object> entry : map.entrySet()) {
-            if (entry.getValue() == null)
+            final SqlQuery query = entry.getKey();
+            final Object val = entry.getValue();
+            if (val == null)
                 continue;
             StringBuilder clause = new StringBuilder();
 
             //add column name (example: building.name)
-            SqlQuery query = entry.getKey();
-            String whereCol = query.getWhereColumn();
-            if (!StringUtils.isBlank(whereCol))
-                clause.append(whereCol).append(" ");
-            else continue;
+            if (StringUtils.isBlank(query.getWhereColumn()))
+                throw new SQLSyntaxErrorException("Missing Where columns.");
+            clause.append(query.getWhereColumn()).append(" ");
 
             //add operator and values (example: building.name like "%abc%")
-            final Object val = entry.getValue();
-            if (val == null)
-                continue;
-            if (val instanceof CharSequence) {
-                clause.append("LIKE CONCAT('%','").append(val).append("','%')");
+            if (val instanceof Code) {
+                clause.append("= '").append(val).append("'");
+            } else if (val instanceof CharSequence) {
+                clause.append("LIKE '%").append(val).append("%'");
             } else if (val instanceof Number) {
                 clause.append("= ").append(val);
             } else if (val.getClass().isArray()) {
@@ -184,7 +155,7 @@ public abstract class AbstractSqlBuilder implements SqlBuilder {
                     clause.append(">= ").append(range.from);
                 else clause.append("BETWEEN ").append(range.from)
                             .append(" AND ").append(range.to);
-            } else continue;
+            } else throw new IllegalStateException("Value type unsupported.");
             set.add(clause.toString());
         }
         return format(set, " AND ");

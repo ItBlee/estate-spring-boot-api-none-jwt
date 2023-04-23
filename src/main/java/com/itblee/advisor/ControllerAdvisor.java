@@ -15,6 +15,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 	
 	@ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
+	    ex.printStackTrace();
 		ErrorResponse body = new ErrorResponse();
 		body.setError(ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);

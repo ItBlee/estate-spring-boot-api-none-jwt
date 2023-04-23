@@ -1,8 +1,10 @@
-package com.itblee.repository.entity;
+package com.itblee.entity;
 
 import java.sql.Date;
 
 public abstract class BaseEntityAudit extends BaseEntity {
+
+    private static final long serialVersionUID = -4117660059663469812L;
 
     private Date createdDate;
     private Date modifiedDate;

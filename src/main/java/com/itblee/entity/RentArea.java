@@ -1,6 +1,9 @@
-package com.itblee.repository.entity;
+package com.itblee.entity;
 
 public class RentArea extends BaseEntityAudit {
+
+    private static final long serialVersionUID = 4301012735028749930L;
+
     private Integer value;
     private Long buildingID;
 

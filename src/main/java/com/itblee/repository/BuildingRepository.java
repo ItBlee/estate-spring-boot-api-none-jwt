@@ -1,6 +1,6 @@
 package com.itblee.repository;
 
-import com.itblee.repository.entity.Building;
+import com.itblee.entity.Building;
 import com.itblee.repository.query.SqlMap;
 
 import java.util.List;

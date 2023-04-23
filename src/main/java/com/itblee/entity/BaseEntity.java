@@ -1,9 +1,11 @@
-package com.itblee.repository.entity;
+package com.itblee.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 public abstract class BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 6809846760041543573L;
 
     private Long id;
 

@@ -1,4 +1,4 @@
-package com.itblee.repository.query.key;
+package com.itblee.repository.query.bean;
 
 import java.util.Objects;
 

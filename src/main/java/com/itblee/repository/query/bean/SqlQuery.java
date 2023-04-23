@@ -1,4 +1,4 @@
-package com.itblee.repository.query.key;
+package com.itblee.repository.query.bean;
 
 import java.util.*;
 
@@ -31,12 +31,16 @@ public class SqlQuery {
     }
 
     public Set<String> getFromTable() {
+        if (isFromQueryTable())
+            throw new UnsupportedOperationException();
         if (fromTable == null)
             fromTable = Collections.emptySet();
         return fromTable;
     }
 
     public Set<SqlQuery> getFromQueryTable() {
+        if (!isFromQueryTable())
+            throw new UnsupportedOperationException();
         if (fromQueryTable == null)
             fromQueryTable = Collections.emptySet();
         return fromQueryTable;
@@ -109,14 +113,15 @@ public class SqlQuery {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SqlQuery)) return false;
-        SqlQuery sqlQuery = (SqlQuery) o;
-        return Objects.equals(getSelectColumn(), sqlQuery.getSelectColumn())
-                && Objects.equals(getJoin(), sqlQuery.getJoin())
-                && Objects.equals(getWhereColumn(), sqlQuery.getWhereColumn());
+        SqlQuery query = (SqlQuery) o;
+        return getSelectColumn().equals(query.getSelectColumn())
+                && Objects.equals(getFromTable(), query.getFromTable())
+                && Objects.equals(isFromQueryTable(), query.isFromQueryTable())
+                && Objects.equals(getJoin(), query.getJoin());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSelectColumn(), getJoin(), getWhereColumn());
+        return Objects.hash(getSelectColumn(), getFromTable(), isFromQueryTable(), getJoin());
     }
 }

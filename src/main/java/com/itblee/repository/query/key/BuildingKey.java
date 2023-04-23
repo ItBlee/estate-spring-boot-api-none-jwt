@@ -1,6 +1,10 @@
 package com.itblee.repository.query.key;
 
+import com.itblee.repository.query.bean.Code;
 import com.itblee.repository.query.ConditionKey;
+import com.itblee.repository.query.bean.SqlJoin;
+import com.itblee.repository.query.bean.SqlQuery;
+import com.itblee.utils.StringUtils;
 
 import java.sql.Date;
 
@@ -18,9 +22,10 @@ public enum BuildingKey implements ConditionKey {
         where("building.name");
     }}),
 
-    DISTRICT_CODE("districtcode", String.class, new SqlQuery() {{
+    DISTRICT_CODE("districtcode", Code.class, new SqlQuery() {{
         select("district.code AS \"districtCode\"",
                 "district.name AS \"districtName\"");
+        from("building");
         joinWith(new SqlJoin() {{
             type(SqlJoin.Type.LEFT_JOIN);
             join("district");
@@ -87,6 +92,7 @@ public enum BuildingKey implements ConditionKey {
     RENT_AREA ("rentarea", Integer.class, true, new SqlQuery() {{
         select("rentarea.id AS \"rentareaID\"",
                 "rentarea.value AS \"rentareaValue\"");
+        from("building");
         joinWith(new SqlJoin() {{
             type(SqlJoin.Type.LEFT_JOIN);
             join("rentarea");
@@ -95,10 +101,11 @@ public enum BuildingKey implements ConditionKey {
         where("rentarea.value");
     }}),
 
-    RENT_TYPES ("types", String[].class, new SqlQuery() {{
+    RENT_TYPES ("types", Code[].class, new SqlQuery() {{
         select("renttype.id AS \"renttypeID\"",
                 "renttype.code AS \"renttypeCode\"",
                 "renttype.name AS \"renttypeName\"");
+        from("building");
         joinWith(new SqlJoin() {{
             type(SqlJoin.Type.LEFT_JOIN);
             join("buildingrenttype");
@@ -115,6 +122,7 @@ public enum BuildingKey implements ConditionKey {
     STAFF ("staffid", Long.class, new SqlQuery() {{
         select("ur.id AS \"userID\"",
                 "ur.fullname AS \"userFullName\"");
+        from("building");
         joinWith(
                 new SqlJoin() {{
             type(SqlJoin.Type.LEFT_JOIN);
@@ -168,7 +176,7 @@ public enum BuildingKey implements ConditionKey {
     LINK_OF_BUILDING ("linkofbuilding", String.class),
     RENT_PRICE_DESCRIPTION ("rentpricedescription", String.class),
 
-    ALL ("*", Object.class, new SqlQuery() {{
+    DEFAULT("*", Object.class, new SqlQuery() {{
         select("building.id",
                 "building.name",
                 "building.street",
@@ -268,6 +276,8 @@ public enum BuildingKey implements ConditionKey {
     private final SqlQuery query;
 
     BuildingKey(String param, Class<?> type) {
+        if (type == null || StringUtils.isBlank(param))
+            throw new IllegalArgumentException("Invalid Key properties.");
         this.param = param;
         this.type = type;
         this.isRange = false;
@@ -275,6 +285,8 @@ public enum BuildingKey implements ConditionKey {
     }
 
     BuildingKey(String param, Class<?> type, SqlQuery query) {
+        if (type == null || StringUtils.isBlank(param))
+            throw new IllegalArgumentException("Invalid Key properties.");
         this.param = param;
         this.type = type;
         this.isRange = false;
@@ -282,6 +294,8 @@ public enum BuildingKey implements ConditionKey {
     }
 
     BuildingKey(String param, Class<?> type, boolean isRange, SqlQuery query) {
+        if (type == null || StringUtils.isBlank(param))
+            throw new IllegalArgumentException("Invalid Key properties.");
         this.param = param;
         this.type = type;
         this.isRange = isRange;
@@ -289,26 +303,23 @@ public enum BuildingKey implements ConditionKey {
     }
 
     @Override
-    public SqlQuery props() {
+    public SqlQuery queryProps() {
         return query;
     }
 
     @Override
-    public String getParam() {
+    public String getParamName() {
         return param;
     }
 
+    @Override
     public Class<?> getType() {
         return type;
     }
 
+    @Override
     public boolean isRange() {
         return isRange;
-    }
-
-    @Override
-    public String getName() {
-        return "Building - " + this.name().toLowerCase();
     }
 
 }

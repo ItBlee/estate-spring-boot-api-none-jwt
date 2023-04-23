@@ -1,11 +1,10 @@
 package com.itblee.repository.query;
 
-import com.itblee.repository.query.key.SqlQuery;
+import com.itblee.repository.query.bean.SqlQuery;
 
 public interface ConditionKey {
-    SqlQuery props();
-    String getParam();
+    SqlQuery queryProps();
+    String getParamName();
     Class<?> getType();
     boolean isRange();
-    String getName();
 }

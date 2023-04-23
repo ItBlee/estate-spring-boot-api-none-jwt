@@ -3,48 +3,51 @@ package com.itblee.repository.query.impl;
 import com.itblee.repository.query.ConditionKey;
 import com.itblee.repository.query.SqlBuilder;
 import com.itblee.repository.query.SqlMap;
-import com.itblee.repository.query.key.SqlQuery;
+import com.itblee.repository.query.bean.SqlQuery;
 
-import java.util.*;
+import java.sql.SQLSyntaxErrorException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class SqlConditionBuilder extends AbstractSqlBuilder implements SqlBuilder {
 
-    private final Map<SqlQuery, Object> map = new LinkedHashMap<>();
+    private final Map<SqlQuery, Object> map;
 
-    private SqlConditionBuilder(Class<? extends ConditionKey> type) {
-        super(type);
+    private SqlConditionBuilder(Map<SqlQuery, Object> map) {
+        this.map = map;
     }
 
     @Override
-    public StringBuilder buildSelectQuery() {
+    public StringBuilder buildSelectQuery() throws SQLSyntaxErrorException {
         return buildSelectQuery(map.keySet());
     }
 
     @Override
-    public StringBuilder buildFromQuery() {
+    public StringBuilder buildFromQuery() throws SQLSyntaxErrorException {
         return buildFromQuery(map.keySet());
     }
 
     @Override
-    public StringBuilder buildJoinQuery() {
+    public StringBuilder buildJoinQuery() throws SQLSyntaxErrorException {
         return buildJoinQuery(map.keySet());
     }
 
     @Override
-    public StringBuilder buildWhereQuery() {
+    public StringBuilder buildWhereQuery()  throws SQLSyntaxErrorException {
         return buildWhereQuery(map);
     }
 
-    public Map<SqlQuery, Object> getMap() {
-        return map;
-    }
-
-    public static SqlBuilder build(SqlMap<? extends ConditionKey> conditions) {
+    public static SqlBuilder map(SqlMap<? extends ConditionKey> conditions) {
         if (conditions == null)
             throw new IllegalArgumentException();
-        SqlConditionBuilder builder = new SqlConditionBuilder(conditions.getType());
-        conditions.forEach((key, val) -> builder.getMap().put(key.props(), val));
-        return builder;
+        Map<SqlQuery, Object> map = new LinkedHashMap<>();
+        conditions.forEach((key, val) -> {
+            if (key.queryProps() == null)
+                throw new IllegalStateException("Invalid key without query pass to Sql Builder map.");
+            map.put(key.queryProps(), val);
+        });
+        return new SqlConditionBuilder(map);
     }
 
     @Override
@@ -59,4 +62,5 @@ public class SqlConditionBuilder extends AbstractSqlBuilder implements SqlBuilde
     public int hashCode() {
         return Objects.hash(map);
     }
+
 }

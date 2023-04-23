@@ -1,6 +1,6 @@
 package com.itblee.mapper.impl;
 
-import com.itblee.repository.entity.*;
+import com.itblee.entity.*;
 import com.itblee.mapper.BuildingMapper;
 import com.itblee.model.dto.*;
 import com.itblee.model.response.BuildingSearchResponse;
@@ -17,7 +17,7 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
 
     @Override
     public Building mapRow(Map<String, Object> row) {
-        Optional<Building> building = quickMap(row, Building.class, BuildingKey.class);
+        Optional<Building> building = mapByKey(row, Building.class, BuildingKey.class);
         building.ifPresent(b -> {
             if (b.getDistrictID() != null) {
                 District district = new District();

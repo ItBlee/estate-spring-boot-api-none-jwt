@@ -22,12 +22,21 @@ public class BuildingAPI {
 	public List<BuildingSearchResponse> getBuilding(
 			@RequestParam(required = false) Map<String, Object> params,
 			@RequestParam(required = false) Object[] types) {
-		params.put("types", types);
+		if (types != null)
+			params.put("types", types);
 		List<BuildingSearchResponse> responses = buildingService.findByCondition(params);
 		if (responses.isEmpty())
 			throw new NoContentException("No buildings found.");
 		return responses;
 	}
+
+	/*@GetMapping
+	public List<BuildingSearchResponse> getBuilding(BuildingSearchRequest request) {
+		List<BuildingSearchResponse> responses = buildingService.findAll(request);
+		if (responses.isEmpty())
+			throw new NoContentException();
+		return responses;
+	}*/
 
 	@GetMapping("/{buildingid}")
 	public BuildingDTO getDetail(@PathVariable("buildingid") Long id) {
