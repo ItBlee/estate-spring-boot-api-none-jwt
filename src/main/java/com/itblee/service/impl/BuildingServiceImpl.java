@@ -1,13 +1,13 @@
 package com.itblee.service.impl;
 
-import com.itblee.mapper.BuildingMapper;
-import com.itblee.model.dto.BuildingDTO;
+import com.itblee.converter.BuildingConverter;
+import com.itblee.entity.Building;
+import com.itblee.model.BuildingModel;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.entity.Building;
-import com.itblee.repository.query.SqlMap;
-import com.itblee.repository.query.impl.SqlConditionMap;
-import com.itblee.repository.query.key.BuildingKey;
+import com.itblee.repository.builder.SqlMap;
+import com.itblee.repository.builder.impl.LinkedSqlMap;
+import com.itblee.repository.builder.key.BuildingKey;
 import com.itblee.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,26 +23,26 @@ public class BuildingServiceImpl implements BuildingService {
     private BuildingRepository buildingRepository;
 
     @Autowired
-    private BuildingMapper buildingMapper;
+    private BuildingConverter buildingConverter;
 
     @Override
-    public Optional<BuildingDTO> findOne(Long id) {
-        SqlMap<BuildingKey> conditions = new SqlConditionMap<>();
-        conditions.put(BuildingKey.DEFAULT);
+    public Optional<BuildingModel> findOne(Long id) {
+        SqlMap<BuildingKey> conditions = new LinkedSqlMap<>();
+        conditions.addScope(BuildingKey.ALL);
         conditions.put(BuildingKey.ID, id);
         List<Building> results = buildingRepository.findByCondition(conditions);
         if (results.isEmpty())
             return Optional.empty();
-        return Optional.of(buildingMapper.toDto(results.get(0)));
+        return Optional.of(buildingConverter.toModel(results.get(0)));
     }
 
     @Override
     public List<BuildingSearchResponse> findByCondition(Map<String, Object> params) {
-        SqlMap<BuildingKey> conditions = new SqlConditionMap<>();
-        conditions.put(BuildingKey.DEFAULT);
+        SqlMap<BuildingKey> conditions = new LinkedSqlMap<>();
+        conditions.addScope(BuildingKey.SHORTEN);
         conditions.putAll(params, BuildingKey.class);
         List<Building> results = buildingRepository.findByCondition(conditions);
-        return buildingMapper.toResponse(results);
+        return buildingConverter.toResponse(results);
     }
 
     /*@Override
@@ -68,12 +68,12 @@ public class BuildingServiceImpl implements BuildingService {
     }*/
 
     @Override
-    public Long save(BuildingDTO dto) {
+    public Long save(BuildingModel dto) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void update(BuildingDTO dto) {
+    public void update(BuildingModel dto) {
         throw new UnsupportedOperationException();
     }
 

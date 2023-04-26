@@ -1,7 +1,7 @@
 package com.itblee.model.response;
 
-import com.itblee.model.dto.AssignUserDTO;
-import com.itblee.model.dto.RentAreaDTO;
+import com.itblee.model.AssignUserModel;
+import com.itblee.model.RentAreaModel;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ public class BuildingSearchResponse {
 	private String managerPhone;
 	private Integer floorArea;
 	private Integer rentPrice;
-	private List<RentAreaDTO> rentAreas = new ArrayList<>();
+	private List<RentAreaModel> rentAreas = new ArrayList<>();
 	private Double brokerageFee;
-	private List<AssignUserDTO> assignUsers = new ArrayList<>();
+	private List<AssignUserModel> assignUsers = new ArrayList<>();
 	private Date createdDate;
 
 	public BuildingSearchResponse() {
@@ -47,11 +47,11 @@ public class BuildingSearchResponse {
 		this.address = address;
 	}
 
-	public List<AssignUserDTO> getAssignUsers() {
+	public List<AssignUserModel> getAssignUsers() {
 		return assignUsers;
 	}
 
-	public void setAssignUsers(List<AssignUserDTO> assignUsers) {
+	public void setAssignUsers(List<AssignUserModel> assignUsers) {
 		this.assignUsers = assignUsers;
 	}
 
@@ -79,11 +79,11 @@ public class BuildingSearchResponse {
 		this.floorArea = floorArea;
 	}
 
-	public List<RentAreaDTO> getRentAreas() {
+	public List<RentAreaModel> getRentAreas() {
 		return rentAreas;
 	}
 
-	public void setRentAreas(List<RentAreaDTO> rentAreas) {
+	public void setRentAreas(List<RentAreaModel> rentAreas) {
 		this.rentAreas = rentAreas;
 	}
 

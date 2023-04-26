@@ -1,22 +1,22 @@
-package com.itblee.model.dto;
+package com.itblee.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BuildingDTO {
+public class BuildingModel {
 	private Long id;
 	private String name;
 	private String street;
 	private String ward;
-	private DistrictDTO district;
+	private DistrictModel district;
 	private String structure;
 	private Integer numberOfBasement;
 	private Integer floorArea;
 	private String direction;
 	private String level;
 	private Integer rentPrice;
-	private List<RentAreaDTO> rentAreas;
-	private List<RentTypeDTO> rentTypes = new ArrayList<>();
+	private List<RentAreaModel> rentAreas = new ArrayList<>();
+	private List<RentTypeModel> rentTypes = new ArrayList<>();
 	private String rentPriceDescription;
 	private String serviceFee;
 	private String carFee;
@@ -33,9 +33,9 @@ public class BuildingDTO {
 	private String linkOfBuilding;
 	private String map;
 	private String image;
-	private List<AssignUserDTO> assignUsers = new ArrayList<>();
+	private List<AssignUserModel> assignUsers = new ArrayList<>();
 	
-	public BuildingDTO() {
+	public BuildingModel() {
 	}
 
 	public Long getId() {
@@ -70,11 +70,11 @@ public class BuildingDTO {
 		this.ward = ward;
 	}
 
-	public DistrictDTO getDistrict() {
+	public DistrictModel getDistrict() {
 		return district;
 	}
 
-	public void setDistrict(DistrictDTO district) {
+	public void setDistrict(DistrictModel district) {
 		this.district = district;
 	}
 
@@ -254,27 +254,27 @@ public class BuildingDTO {
 		this.image = image;
 	}
 
-	public List<RentAreaDTO> getRentAreas() {
+	public List<RentAreaModel> getRentAreas() {
 		return rentAreas;
 	}
 
-	public void setRentAreas(List<RentAreaDTO> rentAreas) {
+	public void setRentAreas(List<RentAreaModel> rentAreas) {
 		this.rentAreas = rentAreas;
 	}
 
-	public List<RentTypeDTO> getRentTypes() {
+	public List<RentTypeModel> getRentTypes() {
 		return rentTypes;
 	}
 
-	public void setRentTypes(List<RentTypeDTO> rentTypes) {
+	public void setRentTypes(List<RentTypeModel> rentTypes) {
 		this.rentTypes = rentTypes;
 	}
 
-	public List<AssignUserDTO> getAssignUsers() {
+	public List<AssignUserModel> getAssignUsers() {
 		return assignUsers;
 	}
 
-	public void setAssignUsers(List<AssignUserDTO> assignUsers) {
+	public void setAssignUsers(List<AssignUserModel> assignUsers) {
 		this.assignUsers = assignUsers;
 	}
 }

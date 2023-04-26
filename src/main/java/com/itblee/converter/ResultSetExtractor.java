@@ -1,4 +1,4 @@
-package com.itblee.mapper;
+package com.itblee.converter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

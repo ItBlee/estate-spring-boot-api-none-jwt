@@ -1,10 +1,10 @@
-package com.itblee.mapper.impl;
+package com.itblee.converter.impl;
 
 import com.itblee.entity.*;
-import com.itblee.mapper.BuildingMapper;
-import com.itblee.model.dto.*;
+import com.itblee.converter.BuildingConverter;
+import com.itblee.model.*;
 import com.itblee.model.response.BuildingSearchResponse;
-import com.itblee.repository.query.key.BuildingKey;
+import com.itblee.repository.builder.key.BuildingKey;
 import com.itblee.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -13,15 +13,15 @@ import java.util.*;
 import static com.itblee.utils.MapUtils.get;
 
 @Component
-public class BuildingMapperImpl extends AbstractMapper<Building> implements BuildingMapper {
+public class BuildingConverterImpl extends AbstractConverter<Building> implements BuildingConverter {
 
     @Override
-    public Building mapRow(Map<String, Object> row) {
-        Optional<Building> building = mapByKey(row, Building.class, BuildingKey.class);
+    public Building convertRow(Map<String, ?> row) {
+        Optional<Building> building = super.convertByKey(row, Building.class, BuildingKey.class);
         building.ifPresent(b -> {
-            if (b.getDistrictID() != null) {
+            if (b.getDistrictId() != null) {
                 District district = new District();
-                district.setId(b.getDistrictID());
+                district.setId(b.getDistrictId());
                 district.setName(get(row, "districtName", String.class));
                 district.setCode(get(row, "districtCode", String.class));
                 b.setDistrict(district);
@@ -31,9 +31,8 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
     }
 
     @Override
-    public Building mergeRow(Map<String, Object> row, Building building) {
-        if (building == null)
-            throw new IllegalStateException();
+    public Building mergeRow(Map<String, ?> row, Building building) {
+        Objects.requireNonNull(building);
         if (row.containsKey("rentareaID")) {
             RentArea rentArea = new RentArea();
             rentArea.setId(get(row, "rentareaID", Long.class));
@@ -71,17 +70,16 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
 
     @Override
     public BuildingSearchResponse toResponse(Building entity) {
-        if (entity == null)
-            throw new IllegalArgumentException();
+        Objects.requireNonNull(entity);
         BuildingSearchResponse response = convert(entity, BuildingSearchResponse.class);
-        List<RentAreaDTO> rentAreas = convert(entity.getRentAreas(), RentAreaDTO.class);
-        List<AssignUserDTO> assignUsers = convert(entity.getAssignUsers(), AssignUserDTO.class);
+        List<RentAreaModel> rentAreas = convert(entity.getRentAreas(), RentAreaModel.class);
+        List<AssignUserModel> assignUsers = convert(entity.getAssignUsers(), AssignUserModel.class);
         List<String> address = new LinkedList<>();
-        if (!StringUtils.isBlank(entity.getStreet()))
+        if (StringUtils.isNotBlank(entity.getStreet()))
             address.add(entity.getStreet());
-        if (!StringUtils.isBlank(entity.getWard()))
+        if (StringUtils.isNotBlank(entity.getWard()))
             address.add(entity.getWard());
-        if (entity.getDistrict() != null && !StringUtils.isBlank(entity.getDistrict().getName()))
+        if (entity.getDistrict() != null && StringUtils.isNotBlank(entity.getDistrict().getName()))
             address.add(entity.getDistrict().getName());
         response.setAddress(String.join(", ", address));
         response.setRentAreas(rentAreas);
@@ -97,15 +95,14 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
     }
 
     @Override
-    public BuildingDTO toDto(Building entity) {
-        if (entity == null)
-            throw new IllegalArgumentException();
-        BuildingDTO dto = convert(entity, BuildingDTO.class);
+    public BuildingModel toModel(Building entity) {
+        Objects.requireNonNull(entity);
+        BuildingModel dto = convert(entity, BuildingModel.class);
         {
-            DistrictDTO district = convert(entity.getDistrict(), DistrictDTO.class);
-            List<RentAreaDTO> rentAreas = convert(entity.getRentAreas(), RentAreaDTO.class);
-            List<RentTypeDTO> rentTypes = convert(entity.getRentTypes(), RentTypeDTO.class);
-            List<AssignUserDTO> assignUsers = convert(entity.getAssignUsers(), AssignUserDTO.class);
+            DistrictModel district = convert(entity.getDistrict(), DistrictModel.class);
+            List<RentAreaModel> rentAreas = convert(entity.getRentAreas(), RentAreaModel.class);
+            List<RentTypeModel> rentTypes = convert(entity.getRentTypes(), RentTypeModel.class);
+            List<AssignUserModel> assignUsers = convert(entity.getAssignUsers(), AssignUserModel.class);
             dto.setDistrict(district);
             dto.setRentAreas(rentAreas);
             dto.setRentTypes(rentTypes);
@@ -115,24 +112,23 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
     }
 
     @Override
-    public List<BuildingDTO> toDto(Collection<Building> entities) {
-        List<BuildingDTO> list = new ArrayList<>();
-        entities.forEach(entity -> list.add(toDto(entity)));
+    public List<BuildingModel> toModel(Collection<Building> entities) {
+        List<BuildingModel> list = new ArrayList<>();
+        entities.forEach(entity -> list.add(toModel(entity)));
         return list;
     }
 
     @Override
-    public Building toEntity(BuildingDTO dto) {
-        if (dto == null)
-            throw new IllegalArgumentException();
-        Building entity = convert(dto, Building.class);
+    public Building toEntity(BuildingModel model) {
+        Objects.requireNonNull(model);
+        Building entity = convert(model, Building.class);
         {
-            District district = convert(dto.getDistrict(), District.class);
-            List<User> assignUsers = convert(dto.getAssignUsers(), User.class);
-            List<RentType> rentTypes = convert(dto.getRentTypes(), RentType.class);
-            List<RentArea> rentAreas = convert(dto.getRentAreas(), RentArea.class);
-                rentAreas.forEach(area -> area.setBuildingID(dto.getId()));
-            entity.setDistrictID(district.getId());
+            District district = convert(model.getDistrict(), District.class);
+            List<User> assignUsers = convert(model.getAssignUsers(), User.class);
+            List<RentType> rentTypes = convert(model.getRentTypes(), RentType.class);
+            List<RentArea> rentAreas = convert(model.getRentAreas(), RentArea.class);
+                rentAreas.forEach(area -> area.setBuildingID(model.getId()));
+            entity.setDistrictId(district.getId());
             entity.setDistrict(district);
             entity.setRentAreas(new HashSet<>(rentAreas));
             entity.setRentTypes(new HashSet<>(rentTypes));
@@ -142,9 +138,9 @@ public class BuildingMapperImpl extends AbstractMapper<Building> implements Buil
     }
 
     @Override
-    public List<Building> toEntity(Collection<BuildingDTO> dtos) {
+    public List<Building> toEntity(Collection<BuildingModel> models) {
         List<Building> list = new ArrayList<>();
-        dtos.forEach(dto -> list.add(toEntity(dto)));
+        models.forEach(dto -> list.add(toEntity(dto)));
         return list;
     }
 }

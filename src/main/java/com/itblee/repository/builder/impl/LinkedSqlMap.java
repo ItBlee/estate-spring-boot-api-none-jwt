@@ -1,32 +1,37 @@
-package com.itblee.repository.query.impl;
+package com.itblee.repository.builder.impl;
 
 import com.itblee.exception.BadRequestException;
-import com.itblee.repository.query.ConditionKey;
-import com.itblee.repository.query.bean.Range;
-import com.itblee.repository.query.SqlMap;
+import com.itblee.repository.builder.SqlMap;
+import com.itblee.repository.builder.SqlKey;
+import com.itblee.repository.builder.util.Range;
+import com.itblee.repository.builder.util.ForwardingMap;
 import com.itblee.utils.CastUtils;
 import com.itblee.utils.MapUtils;
 import com.itblee.utils.StringUtils;
 
 import java.util.*;
 
-import static com.itblee.repository.query.bean.Range.RANGE_FROM;
-import static com.itblee.repository.query.bean.Range.RANGE_TO;
+import static com.itblee.repository.builder.util.Range.RANGE_FROM;
+import static com.itblee.repository.builder.util.Range.RANGE_TO;
 
-public class SqlConditionMap<K extends ConditionKey> extends LinkedHashMap<K, Object> implements SqlMap<K> {
+public class LinkedSqlMap<K extends SqlKey> extends ForwardingMap<K, Object> implements SqlMap<K> {
+
+	private static final long serialVersionUID = -6418551830238036585L;
+
+	public LinkedSqlMap() {
+        super(new LinkedHashMap<>());
+    }
 
     private void check(K key) {
-        if (key == null)
-            throw new IllegalArgumentException("Key required !");
-        if (key.queryProps() == null)
-            throw new IllegalStateException("Missing SqlQuery from Key.");
+        Objects.requireNonNull(key, "Key required !");
+        Objects.requireNonNull(key.getStatement(), "Missing SqlQuery from Key.");
     }
 
     @Override
-    public Object put(K key) {
+    public Object addScope(K key) {
         check(key);
-        if (StringUtils.isNotBlank(key.queryProps().getWhereColumn()))
-            throw new IllegalStateException("Key without value, require query not contains where clause.");
+        if (!key.isScope())
+            throw new IllegalArgumentException("Required Scope not key.");
         return super.put(key, null);
     }
 
@@ -34,7 +39,7 @@ public class SqlConditionMap<K extends ConditionKey> extends LinkedHashMap<K, Ob
     public Object put(K key, Object value) {
         check(key);
         try {
-            if (StringUtils.isBlank(key.queryProps().getWhereColumn()))
+            if (key.isMarker())
                 throw new IllegalStateException("Unsupported.");
             Optional<?> cast = CastUtils.cast(value, key.getType());
             if (!cast.isPresent())
@@ -55,31 +60,31 @@ public class SqlConditionMap<K extends ConditionKey> extends LinkedHashMap<K, Ob
     public Object put(K key, Object fromValue, Object toValue) {
         check(key);
         try {
-            if (StringUtils.isBlank(key.queryProps().getWhereColumn()))
+            if (key.isMarker())
                 throw new IllegalStateException("Unsupported.");
             Number from = (Number) CastUtils.cast(fromValue, key.getType()).orElse(null);
             Number to = (Number) CastUtils.cast(toValue, key.getType()).orElse(null);
-            return super.put(key, Range.newRange(from, to));
+            return super.put(key, Range.valueOf(from, to));
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw new BadRequestException(key.getParamName() + " invalid: " + e.getMessage());
         }
     }
 
     @Override
-    public void putAll(Map<String, Object> params, Class<K> type) {
-        if (params == null || type == null)
-            throw new IllegalArgumentException();
+    public void putAll(Map<String, ?> params, Class<K> type) {
+        Objects.requireNonNull(params);
+        Objects.requireNonNull(type);
         if (params.isEmpty())
             return;
-        Map<String, ConditionKey> keyMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (ConditionKey key : type.getEnumConstants()) {
+        Map<String, SqlKey> keyMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (SqlKey key : type.getEnumConstants()) {
             keyMap.put(key.getParamName(), key);
         }
-        for (Map.Entry<String, Object> param : params.entrySet()) {
+        for (Map.Entry<String, ?> param : params.entrySet()) {
             String keyName = StringUtils.removeIfLast(param.getKey(), RANGE_FROM, RANGE_TO);
             K key = MapUtils.get(keyMap, keyName, type);
-            if (key == null || key.queryProps() == null)
-                throw new BadRequestException(param.getKey() + " invalid: " + "Unsupported.");
+            if (key == null || key.getStatement() == null)
+                throw new BadRequestException(param.getKey() + " invalid: Unsupported.");
             if (!key.isRange())
                 put(key, param.getValue());
             else put(key, params.getOrDefault(key.getParamName() + RANGE_FROM, null),

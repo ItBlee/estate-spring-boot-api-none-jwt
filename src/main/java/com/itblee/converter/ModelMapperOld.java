@@ -1,4 +1,4 @@
-package com.itblee.mapper;
+package com.itblee.converter;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,20 +7,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ModelMapper {
+public class ModelMapperOld {
     private final ObjectMapper mapper;
 
-    private ModelMapper() {
+    private ModelMapperOld() {
         this.mapper = new ObjectMapper();
         this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         //this.mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     private static final class InstanceHolder {
-        static final ModelMapper instance = new ModelMapper();
+        static final ModelMapperOld instance = new ModelMapperOld();
     }
 
-    public static ModelMapper getInstance() {
+    public static ModelMapperOld getInstance() {
         return InstanceHolder.instance;
     }
 

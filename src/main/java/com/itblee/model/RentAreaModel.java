@@ -1,9 +1,9 @@
-package com.itblee.model.dto;
+package com.itblee.model;
 
-public class RentAreaDTO {
+public class RentAreaModel {
     private Integer value;
 
-    public RentAreaDTO() {
+    public RentAreaModel() {
     }
 
     public Integer getValue() {

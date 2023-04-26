@@ -1,12 +1,13 @@
 package com.itblee.repository.impl;
 
+import com.itblee.converter.BuildingConverter;
 import com.itblee.entity.Building;
 import com.itblee.exception.ErrorRepositoryException;
-import com.itblee.mapper.BuildingMapper;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.repository.query.SqlBuilder;
-import com.itblee.repository.query.SqlMap;
-import com.itblee.repository.query.impl.SqlConditionBuilder;
+import com.itblee.repository.builder.SqlBuilder;
+import com.itblee.repository.builder.util.SqlBuilderFactory;
+import com.itblee.repository.builder.SqlMap;
+import com.itblee.utils.ConnectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,20 +15,36 @@ import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 @Repository
-public class BuildingRepositoryImpl extends AbstractRepository<Building> implements BuildingRepository {
+public class BuildingRepositoryImpl implements BuildingRepository {
 
     @Autowired
-    private BuildingMapper buildingMapper;
+    private BuildingConverter buildingConverter;
 
     @Override
     public List<Building> findByCondition(SqlMap<?> conditions) {
-        SqlBuilder builder = SqlConditionBuilder.map(conditions);
+        SqlBuilderFactory factory = new SqlBuilderFactory(conditions);
+        SqlBuilder builder = factory.getInstance("query");
         try {
-            StringBuilder sql = builder.buildFinalQuery();
-            return query(sql.toString(), buildingMapper);
+            String sql = builder.buildFinalQuery();
+            return ConnectionUtils.query(sql, buildingConverter);
         } catch (SQLSyntaxErrorException e) {
             throw new ErrorRepositoryException(e);
         }
+    }
+
+    @Override
+    public Long save(Building entity) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void update(Building entity) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void delete(Long id) {
+        throw new UnsupportedOperationException();
     }
 
     /*@Override
@@ -51,21 +68,6 @@ public class BuildingRepositoryImpl extends AbstractRepository<Building> impleme
         return query(sql.toString(), buildingMapper);
     }*/
 
-    @Override
-    public Long save(Building entity) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void update(Building entity) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete(Long id) {
-        throw new UnsupportedOperationException();
-    }
-
     /*private StringBuilder getQuerySQL() {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT building.*, ");
@@ -82,8 +84,8 @@ public class BuildingRepositoryImpl extends AbstractRepository<Building> impleme
         sql.append("LEFT JOIN ( ");
         sql.append("SELECT user.id, user.fullname ");
         sql.append("FROM user ");
-        sql.append("LEFT JOIN user_role ON user.id = user_role.userid ");
-        sql.append("LEFT JOIN role ON role.id = user_role.roleid ");
+        sql.append("INNER JOIN user_role ON user.id = user_role.userid ");
+        sql.append("INNER JOIN role ON role.id = user_role.roleid ");
         sql.append("WHERE role.code = \"staff\" ");
         sql.append(") AS ur ON ur.id = assignmentbuilding.staffid ");
         return sql;

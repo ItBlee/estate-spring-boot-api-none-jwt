@@ -2,6 +2,10 @@ package com.itblee.utils;
 
 public final class StringUtils {
 
+    private StringUtils() {
+        throw new AssertionError();
+    }
+
     public static boolean isBlank(final CharSequence cs) {
         if (cs == null || cs.length() == 0)
             return true;
@@ -48,10 +52,6 @@ public final class StringUtils {
             if (str.endsWith(s))
                 return str.trim().substring(0, str.length() - s.length());
         return str;
-    }
-
-    private StringUtils() {
-        throw new AssertionError();
     }
 
 }

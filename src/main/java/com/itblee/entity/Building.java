@@ -10,7 +10,7 @@ public class Building extends BaseEntityAudit {
     private String name;
     private String street;
     private String ward;
-    private Long districtID;
+    private Long districtId;
     private String structure;
     private Integer numberOfBasement;
     private Integer floorArea;
@@ -68,12 +68,12 @@ public class Building extends BaseEntityAudit {
         this.ward = ward;
     }
 
-    public Long getDistrictID() {
-        return districtID;
+    public Long getDistrictId() {
+        return districtId;
     }
 
-    public void setDistrictID(Long districtID) {
-        this.districtID = districtID;
+    public void setDistrictId(Long districtId) {
+        this.districtId = districtId;
     }
 
     public String getStructure() {

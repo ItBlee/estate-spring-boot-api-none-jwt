@@ -1,11 +1,13 @@
-package com.itblee.repository.query.bean;
+package com.itblee.repository.builder.util;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
 public final class Code implements Serializable, CharSequence {
 
-    private final char[] value;
+	private static final long serialVersionUID = -979229696925868743L;
+	
+	private final char[] value;
 
     public Code(CharSequence code) {
         this.value = code.toString().toCharArray();

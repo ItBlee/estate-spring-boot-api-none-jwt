@@ -1,13 +1,20 @@
 package com.itblee.utils;
 
-import com.itblee.repository.query.bean.Code;
+import com.itblee.repository.builder.util.Code;
 
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 public final class CastUtils {
+
+    private CastUtils() {
+        throw new AssertionError();
+    }
+
+    private static final String STRING_DELIMITER = ",";
 
     public static <T> Optional<T> cast(final Object o, Class<T> cls) {
         if (cls == null)
@@ -17,19 +24,7 @@ public final class CastUtils {
         if (cls.isInstance(o))
             return Optional.of(cls.cast(o));
 
-        final String STRING_DELIMITER = ",";
-
-        String str;
-        if (o instanceof CharSequence || o instanceof Number || o instanceof Date) {
-            str = o.toString();
-        } else if (o.getClass().isArray()) {
-            Object[] arr = (Object[]) o;
-            str = String.join(STRING_DELIMITER, Arrays.copyOf(arr, arr.length, String[].class));
-        } else if (o instanceof Collection<?>) {
-            Object[] arr = ((Collection<?>) o).toArray();
-            str = String.join(STRING_DELIMITER, Arrays.copyOf(arr, arr.length, String[].class));
-        } else
-            throw new ClassCastException("Cast type " + o.getClass().getName() + " not supported yet.");
+        String str = castToString(o);
         if (StringUtils.isBlank(str))
             return Optional.empty();
 
@@ -58,8 +53,20 @@ public final class CastUtils {
         }
     }
 
-    private CastUtils() {
-        throw new AssertionError();
+    public static String castToString(Object o) {
+        Objects.requireNonNull(o);
+        String str;
+        if (o instanceof CharSequence || o instanceof Number || o instanceof Date) {
+            str = o.toString();
+        } else if (o.getClass().isArray()) {
+            Object[] arr = (Object[]) o;
+            str = String.join(STRING_DELIMITER, Arrays.copyOf(arr, arr.length, String[].class));
+        } else if (o instanceof Collection<?>) {
+            Object[] arr = ((Collection<?>) o).toArray();
+            str = String.join(STRING_DELIMITER, Arrays.copyOf(arr, arr.length, String[].class));
+        } else
+            throw new ClassCastException("Cast type " + o.getClass().getName() + " not supported yet.");
+        return str;
     }
 
 }

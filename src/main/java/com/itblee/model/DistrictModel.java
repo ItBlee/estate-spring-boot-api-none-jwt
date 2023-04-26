@@ -1,14 +1,23 @@
-package com.itblee.model.dto;
+package com.itblee.model;
 
-public class RentTypeDTO {
+public class DistrictModel {
+    private Long id;
     private String code;
     private String name;
 
-    public RentTypeDTO() {
+    public DistrictModel() {
     }
 
     public String getCode() {
         return code;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setCode(String code) {

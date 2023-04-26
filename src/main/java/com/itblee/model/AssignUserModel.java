@@ -1,10 +1,10 @@
-package com.itblee.model.dto;
+package com.itblee.model;
 
-public class AssignUserDTO {
+public class AssignUserModel {
     private Long id;
     private String fullName;
 
-    public AssignUserDTO() {
+    public AssignUserModel() {
     }
 
     public Long getId() {
