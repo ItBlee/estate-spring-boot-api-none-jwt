@@ -7,7 +7,7 @@ import com.itblee.model.response.BuildingSearchResponse;
 import java.util.Collection;
 import java.util.List;
 
-public interface BuildingConverter extends ResultSetExtractor<List<Building>>, RowConverter<Building> {
+public interface BuildingConverter extends ResultSetExtractor<List<Building>>, RowMapper<Building> {
 
 	BuildingSearchResponse toResponse(Building entity);
 	List<BuildingSearchResponse> toResponse(Collection<Building> entities);

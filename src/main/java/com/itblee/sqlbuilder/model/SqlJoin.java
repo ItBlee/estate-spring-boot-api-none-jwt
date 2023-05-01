@@ -1,11 +1,12 @@
-package com.itblee.repository.builder.impl;
+package com.itblee.sqlbuilder.model;
 
-import com.itblee.utils.StringUtils;
+import com.itblee.util.StringUtils;
+import com.itblee.util.ValidateUtils;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public final class SqlJoin implements Serializable {
+public class SqlJoin implements Serializable {
 
 	private static final long serialVersionUID = -1075257006792061786L;
 
@@ -27,26 +28,22 @@ public final class SqlJoin implements Serializable {
         }
     }
 
-    private final String joinTable;
-    private final SqlQuery joinInnerTable;
+    private final Object joinTable;
     private final String joinOn;
     private final Type joinType;
 
     public static final class Builder {
-        private String joinTable = null;
-        private SqlQuery joinInnerTable = null;
+        private Object joinTable = null;
         private String joinOn = null;
         private Type joinType = null;
 
         public Builder join(String joinTable) {
             this.joinTable = joinTable;
-            this.joinInnerTable = null;
             return this;
         }
 
-        public Builder join(SqlQuery joinInnerTable) {
-            this.joinInnerTable = joinInnerTable;
-            this.joinTable = null;
+        public Builder join(SqlQuery joinSubQuery) {
+            this.joinTable = joinSubQuery;
             return this;
         }
 
@@ -61,9 +58,9 @@ public final class SqlJoin implements Serializable {
         }
 
         public SqlJoin done() {
-            Objects.requireNonNull(joinType);
-            if ((joinTable == null && joinInnerTable == null)
-                    || StringUtils.isBlank(joinOn))
+            ValidateUtils.requireNonNull(joinType);
+            StringUtils.requireNonBlank(joinOn);
+            if (joinTable == null)
                 throw new IllegalArgumentException();
             return new SqlJoin(this);
         }
@@ -74,23 +71,14 @@ public final class SqlJoin implements Serializable {
         return new Builder();
     }
 
-    public SqlJoin(Builder builder) {
+    private SqlJoin(final Builder builder) {
         this.joinTable = builder.joinTable;
-        this.joinInnerTable = builder.joinInnerTable;
         this.joinOn = builder.joinOn;
         this.joinType = builder.joinType;
     }
 
-    public String getJoinTable() {
-        if (isInnerTable())
-            throw new UnsupportedOperationException();
+    public Object getJoinTable() {
         return joinTable;
-    }
-
-    public SqlQuery getJoinInnerTable() {
-        if (!isInnerTable())
-            throw new UnsupportedOperationException();
-        return joinInnerTable;
     }
 
     public String getJoinOn() {
@@ -101,28 +89,17 @@ public final class SqlJoin implements Serializable {
         return joinType;
     }
 
-    public boolean isInnerTable() {
-        return joinInnerTable != null && joinTable == null;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SqlJoin)) return false;
-        SqlJoin that = (SqlJoin) o;
-        if (!Objects.equals(isInnerTable(), that.isInnerTable()))
-            return false;
-        if (isInnerTable())
-            return Objects.equals(getJoinInnerTable(), that.getJoinInnerTable())
-                    && Objects.equals(getJoinOn(), that.getJoinOn());
-        else return Objects.equals(getJoinTable(), that.getJoinTable())
-                && Objects.equals(getJoinOn(), that.getJoinOn());
+        SqlJoin sqlJoin = (SqlJoin) o;
+        return getJoinTable().equals(sqlJoin.getJoinTable())
+                && getJoinOn().equals(sqlJoin.getJoinOn());
     }
 
     @Override
     public int hashCode() {
-        if (isInnerTable())
-            return Objects.hash(getJoinInnerTable(), getJoinOn());
-        else return Objects.hash(getJoinTable(), getJoinOn());
+        return Objects.hash(getJoinTable(), getJoinOn());
     }
 }

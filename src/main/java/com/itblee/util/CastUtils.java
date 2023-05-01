@@ -1,20 +1,19 @@
-package com.itblee.utils;
+package com.itblee.util;
 
-import com.itblee.repository.builder.util.Code;
+import com.itblee.sqlbuilder.model.Code;
 
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 
 public final class CastUtils {
 
+    private static final String STRING_DELIMITER = ",";
+
     private CastUtils() {
         throw new AssertionError();
     }
-
-    private static final String STRING_DELIMITER = ",";
 
     public static <T> Optional<T> cast(final Object o, Class<T> cls) {
         if (cls == null)
@@ -30,23 +29,33 @@ public final class CastUtils {
 
         Object obj;
         try {
-            if (Code.class.isAssignableFrom(cls)) {
-                obj = Code.valueOf(str);
-            } else if (CharSequence.class.isAssignableFrom(cls)) {
-                obj = str;
-            } else if (Integer.class.isAssignableFrom(cls)) {
-                obj = Integer.valueOf(str);
-            } else if (Long.class.isAssignableFrom(cls)) {
-                obj = Long.valueOf(str);
-            } else if (Code[].class.isAssignableFrom(cls)) {
-                obj = Code.valueOf(str.split(STRING_DELIMITER));
-            } else if (CharSequence[].class.isAssignableFrom(cls)) {
-                obj = str.split(STRING_DELIMITER);
-            } else if (Date.class.isAssignableFrom(cls)) {
-                obj = Date.valueOf(str);
+            if (!cls.isArray()) {
+                if (Code.class.isAssignableFrom(cls)) {
+                    obj = Code.valueOf(str);
+                } else if (CharSequence.class.isAssignableFrom(cls)) {
+                    obj = str;
+                } else if (Integer.class.isAssignableFrom(cls)) {
+                    obj = Integer.valueOf(str);
+                } else if (Long.class.isAssignableFrom(cls)) {
+                    obj = Long.valueOf(str);
+                } else if (Date.class.isAssignableFrom(cls)) {
+                    obj = Date.valueOf(str);
+                } else {
+                    throw new ClassCastException("Cast to " + cls.getSimpleName() + " not supported yet.");
+                }
             } else {
-                throw new ClassCastException("Cast to " + cls.getSimpleName() + " not supported yet.");
+                String[] arr = str.split(STRING_DELIMITER);
+                if (Code[].class.isAssignableFrom(cls)) {
+                    obj = Code.valueOf(arr);
+                } else if (CharSequence[].class.isAssignableFrom(cls)) {
+                    obj = arr;
+                } else if (Integer[].class.isAssignableFrom(cls)) {
+                    obj = Arrays.stream(arr).mapToInt(Integer::parseInt).toArray();
+                } else {
+                    throw new ClassCastException("Cast to " + cls.getSimpleName() + " not supported yet.");
+                }
             }
+
             return Optional.of(cls.cast(obj));
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid value type.");
@@ -54,7 +63,7 @@ public final class CastUtils {
     }
 
     public static String castToString(Object o) {
-        Objects.requireNonNull(o);
+        ValidateUtils.requireNonNull(o);
         String str;
         if (o instanceof CharSequence || o instanceof Number || o instanceof Date) {
             str = o.toString();

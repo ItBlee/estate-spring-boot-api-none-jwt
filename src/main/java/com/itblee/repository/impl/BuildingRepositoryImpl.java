@@ -4,15 +4,16 @@ import com.itblee.converter.BuildingConverter;
 import com.itblee.entity.Building;
 import com.itblee.exception.ErrorRepositoryException;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.repository.builder.SqlBuilder;
-import com.itblee.repository.builder.util.SqlBuilderFactory;
-import com.itblee.repository.builder.SqlMap;
-import com.itblee.utils.ConnectionUtils;
+import com.itblee.sqlbuilder.SqlBuilder;
+import com.itblee.sqlbuilder.impl.SqlBuilderFactory;
+import com.itblee.sqlbuilder.SqlMap;
+import com.itblee.util.ConnectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLSyntaxErrorException;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class BuildingRepositoryImpl implements BuildingRepository {
@@ -21,11 +22,12 @@ public class BuildingRepositoryImpl implements BuildingRepository {
     private BuildingConverter buildingConverter;
 
     @Override
-    public List<Building> findByCondition(SqlMap<?> conditions) {
-        SqlBuilderFactory factory = new SqlBuilderFactory(conditions);
+    public List<Building> findByCondition(Map<?, ?> conditions) {
+        SqlMap<?> statements = (SqlMap<?>) conditions;
+        SqlBuilderFactory factory = new SqlBuilderFactory(statements);
         SqlBuilder builder = factory.getInstance("query");
         try {
-            String sql = builder.buildFinalQuery();
+            String sql = builder.build();
             return ConnectionUtils.query(sql, buildingConverter);
         } catch (SQLSyntaxErrorException e) {
             throw new ErrorRepositoryException(e);

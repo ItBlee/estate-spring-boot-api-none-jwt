@@ -1,23 +1,25 @@
 package com.itblee.converter.impl;
 
-import com.itblee.entity.*;
 import com.itblee.converter.BuildingConverter;
+import com.itblee.entity.*;
 import com.itblee.model.*;
 import com.itblee.model.response.BuildingSearchResponse;
-import com.itblee.repository.builder.key.BuildingKey;
-import com.itblee.utils.StringUtils;
+import com.itblee.sqlbuilder.key.BuildingKey;
+import com.itblee.util.SqlKeyUtils;
+import com.itblee.util.StringUtils;
+import com.itblee.util.ValidateUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static com.itblee.utils.MapUtils.get;
+import static com.itblee.util.MapUtils.get;
 
 @Component
 public class BuildingConverterImpl extends AbstractConverter<Building> implements BuildingConverter {
 
     @Override
-    public Building convertRow(Map<String, ?> row) {
-        Optional<Building> building = super.convertByKey(row, Building.class, BuildingKey.class);
+    public Optional<Building> mapRow(Map<String, ?> row) {
+        Optional<Building> building = SqlKeyUtils.mapByKey(row, Building.class, BuildingKey.class);
         building.ifPresent(b -> {
             if (b.getDistrictId() != null) {
                 District district = new District();
@@ -27,12 +29,13 @@ public class BuildingConverterImpl extends AbstractConverter<Building> implement
                 b.setDistrict(district);
             }
         });
-        return building.orElse(null);
+        return building;
     }
 
     @Override
-    public Building mergeRow(Map<String, ?> row, Building building) {
-        Objects.requireNonNull(building);
+    public Optional<Building> groupRow(Map<String, ?> row, Building building) {
+        if (building == null)
+            return Optional.empty();
         if (row.containsKey("rentareaID")) {
             RentArea rentArea = new RentArea();
             rentArea.setId(get(row, "rentareaID", Long.class));
@@ -65,12 +68,12 @@ public class BuildingConverterImpl extends AbstractConverter<Building> implement
                 }
             }
         }
-        return building;
+        return Optional.of(building);
     }
 
     @Override
     public BuildingSearchResponse toResponse(Building entity) {
-        Objects.requireNonNull(entity);
+        ValidateUtils.requireNonNull(entity);
         BuildingSearchResponse response = convert(entity, BuildingSearchResponse.class);
         List<RentAreaModel> rentAreas = convert(entity.getRentAreas(), RentAreaModel.class);
         List<AssignUserModel> assignUsers = convert(entity.getAssignUsers(), AssignUserModel.class);
@@ -96,7 +99,7 @@ public class BuildingConverterImpl extends AbstractConverter<Building> implement
 
     @Override
     public BuildingModel toModel(Building entity) {
-        Objects.requireNonNull(entity);
+        ValidateUtils.requireNonNull(entity);
         BuildingModel dto = convert(entity, BuildingModel.class);
         {
             DistrictModel district = convert(entity.getDistrict(), DistrictModel.class);
@@ -120,7 +123,7 @@ public class BuildingConverterImpl extends AbstractConverter<Building> implement
 
     @Override
     public Building toEntity(BuildingModel model) {
-        Objects.requireNonNull(model);
+        ValidateUtils.requireNonNull(model);
         Building entity = convert(model, Building.class);
         {
             District district = convert(model.getDistrict(), District.class);
@@ -140,7 +143,7 @@ public class BuildingConverterImpl extends AbstractConverter<Building> implement
     @Override
     public List<Building> toEntity(Collection<BuildingModel> models) {
         List<Building> list = new ArrayList<>();
-        models.forEach(dto -> list.add(toEntity(dto)));
+        models.forEach(model -> list.add(toEntity(model)));
         return list;
     }
 }

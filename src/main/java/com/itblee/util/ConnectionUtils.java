@@ -1,4 +1,4 @@
-package com.itblee.utils;
+package com.itblee.util;
 
 import com.itblee.converter.ResultSetExtractor;
 import com.itblee.exception.ErrorRepositoryException;
@@ -11,12 +11,12 @@ import java.util.ResourceBundle;
 
 public final class ConnectionUtils {
 
+    static final ResourceBundle bundle = ResourceBundle.getBundle("Application");
+    private static DataSource dbSource;
+
     private ConnectionUtils() {
         throw new AssertionError();
     }
-
-    static final ResourceBundle bundle = ResourceBundle.getBundle("Application");
-    private static DataSource dbSource;
 
     public static DataSource getDataSource() {
         if (dbSource == null) {
@@ -32,6 +32,7 @@ public final class ConnectionUtils {
     }
 
     public static Connection createConnection() throws SQLException, ClassNotFoundException {
+        Class.forName(bundle.getString("db.driver"));
         return getDataSource().getConnection();
     }
 

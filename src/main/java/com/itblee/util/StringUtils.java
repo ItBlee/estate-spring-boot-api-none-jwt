@@ -1,4 +1,4 @@
-package com.itblee.utils;
+package com.itblee.util;
 
 public final class StringUtils {
 
@@ -18,6 +18,12 @@ public final class StringUtils {
 
     public static boolean isNotBlank(final CharSequence cs) {
         return !isBlank(cs);
+    }
+
+    public static boolean requireNonBlank(final CharSequence cs) {
+        if (isBlank(cs))
+            throw new IllegalArgumentException();
+        return isNotBlank(cs);
     }
 
     public static boolean containsBlank(final CharSequence[] arr) {

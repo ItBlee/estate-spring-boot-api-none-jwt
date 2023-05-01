@@ -1,44 +1,35 @@
 package com.itblee.converter.impl;
 
 import com.itblee.converter.ResultSetExtractor;
-import com.itblee.converter.RowConverter;
+import com.itblee.converter.RowMapper;
 import com.itblee.entity.BaseEntity;
-import com.itblee.repository.builder.SqlKey;
-import com.itblee.utils.MapUtils;
-import com.itblee.utils.StringUtils;
+import com.itblee.util.MapUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.*;
 
-public abstract class AbstractConverter<T extends BaseEntity> implements ResultSetExtractor<List<T>>, RowConverter<T> {
+public abstract class AbstractConverter<T extends BaseEntity> implements ResultSetExtractor<List<T>>, RowMapper<T> {
 
     @Autowired
     private ModelMapper modelMapper;
 
     @Override
     public List<T> extractData(ResultSet resultSet) throws SQLException {
-        Map<Long, T> groupId = new HashMap<>();
+        Map<Long, T> groupById = new HashMap<>();
         for (Map<String, Object> row : extractRows(resultSet)) {
             Long id = MapUtils.get(row, "id", Long.class);
             if (id == null)
                 throw new SQLSyntaxErrorException("Query without ID.");
-            T instance = groupId.getOrDefault(id, null);
-            if (instance == null)
-                instance = convertRow(row);
-            try {
-                /*merge duplicate building row if any
-                merge fail -> Illegal exception*/
-                instance = mergeRow(row, instance);
-                groupId.put(instance.getId(), instance);
-            } catch (IllegalStateException ignored) {}
+            T instance = groupById.getOrDefault(id, mapRow(row).orElse(null));
+            groupRow(row, instance)
+                    .ifPresent(inst -> groupById.put(inst.getId(), inst));
         }
-        return new ArrayList<>(groupId.values());
+        return new ArrayList<>(groupById.values());
     }
 
     @Override
@@ -46,7 +37,7 @@ public abstract class AbstractConverter<T extends BaseEntity> implements ResultS
         List<Map<String, Object>> row = new ArrayList<>();
         ResultSetMetaData md = resultSet.getMetaData();
         while (resultSet.next()) {
-            Map<String, Object> col = new LinkedHashMap<>();
+            Map<String, Object> col = new HashMap<>();
             for (int i = 1; i <= md.getColumnCount(); i++) {
                 col.put(md.getColumnLabel(i), resultSet.getObject(i));
             }
@@ -55,36 +46,11 @@ public abstract class AbstractConverter<T extends BaseEntity> implements ResultS
         return row;
     }
 
-    protected Optional<T> convertByKey(Map<String, ?> row, Class<T> tClass, Class<? extends SqlKey> keyClass) {
-        final String SETTER_KEYWORD = "set";
-        Set<Method> setters = new HashSet<>();
-        for (Method method : tClass.getMethods()) {
-            if (method.getName().startsWith(SETTER_KEYWORD))
-                setters.add(method);
-        }
-        Map<String, SqlKey> keyMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (SqlKey key : keyClass.getEnumConstants()) {
-        	keyMap.put(key.getParamName(), key);
-        }
-        try {
-            T instance = tClass.newInstance();
-            for (Method setter : setters) {
-                String setterName = StringUtils.formatAlphaOnly(setter.getName())
-                        .replaceFirst(SETTER_KEYWORD, "")
-                        .toLowerCase();
-                SqlKey key = keyMap.getOrDefault(setterName, null);
-                if (key != null
-                        && key.getType() == setter.getParameterTypes()[0])
-                    setter.invoke(instance, MapUtils.get(row, key.getParamName(), key.getType()));
-            }
-            return Optional.of(instance);
-        } catch (ReflectiveOperationException  e) {
-            e.printStackTrace();
-            throw new IllegalStateException();
-        }
-    }
-
     protected <E> E convert(Object object, Class<E> convertTo) {
+    	if (object == null)
+    	    return null;
+    	if (object.getClass() == convertTo)
+    	    return convertTo.cast(object);
         return modelMapper.map(object, convertTo);
     }
 

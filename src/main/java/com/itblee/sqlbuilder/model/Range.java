@@ -1,8 +1,8 @@
-package com.itblee.repository.builder.util;
+package com.itblee.sqlbuilder.model;
 
 import java.io.Serializable;
 
-public final class Range implements Serializable {
+public class Range implements Serializable {
 	private static final long serialVersionUID = 1703267770870712931L;
 	public static final String RANGE_FROM = "from";
     public static final String RANGE_TO = "to";

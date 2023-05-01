@@ -36,7 +36,7 @@ public class Building extends BaseEntityAudit {
     private String map;
     private String image;
 
-    private District district;
+    private District district = new District();
     private Set<RentArea> rentAreas = new HashSet<>();
     private Set<RentType> rentTypes = new HashSet<>();
     private Set<User> assignUsers = new HashSet<>();

@@ -117,7 +117,7 @@ CREATE TABLE `building` (
   `managerphone` varchar(255) DEFAULT NULL,
   `note` varchar(255) DEFAULT NULL,
   `linkofbuilding` varchar(255) DEFAULT NULL,
-  `map` varchar(255) DEFAULT NULL,
+  `statements` varchar(255) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `createddate` datetime DEFAULT NULL,
   `modifieddate` datetime DEFAULT NULL,

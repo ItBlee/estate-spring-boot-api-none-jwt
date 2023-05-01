@@ -1,11 +1,11 @@
-package com.itblee.repository.builder.key;
+package com.itblee.sqlbuilder.key;
 
-import com.itblee.repository.builder.SqlStatement;
-import com.itblee.repository.builder.SqlKey;
-import com.itblee.repository.builder.util.Code;
-import com.itblee.repository.builder.impl.SqlJoin;
-import com.itblee.repository.builder.impl.SqlQuery;
-import com.itblee.utils.StringUtils;
+import com.itblee.sqlbuilder.SqlKey;
+import com.itblee.sqlbuilder.SqlStatement;
+import com.itblee.sqlbuilder.model.SqlJoin;
+import com.itblee.sqlbuilder.model.SqlQuery;
+import com.itblee.sqlbuilder.model.Code;
+import com.itblee.util.StringUtils;
 
 import java.sql.Date;
 
@@ -154,6 +154,8 @@ public enum BuildingKey implements SqlKey {
         .where("ur.id").build()
     ),
 
+
+    //MAKER
     MAP ("map", String.class),
     NOTE ("note", String.class),
     IMAGE ("image", String.class),
@@ -177,6 +179,8 @@ public enum BuildingKey implements SqlKey {
     LINK_OF_BUILDING ("linkofbuilding", String.class),
     RENT_PRICE_DESCRIPTION ("rentpricedescription", String.class),
 
+
+    //SCOPE
     ALL (SqlQuery.builder()
         .select("building.id",
                 "building.name",
@@ -269,6 +273,7 @@ public enum BuildingKey implements SqlKey {
         ).build()
     ),
 
+    //SCOPE
     SHORTEN (SqlQuery.builder()
         .select("building.id",
                 "building.name",
@@ -342,47 +347,50 @@ public enum BuildingKey implements SqlKey {
     private final String param;
     private final Class<?> type;
     private final boolean isRange;
-    private final SqlQuery query;
+    private final SqlStatement statement;
 
-    BuildingKey(SqlQuery query) {
-        if (query == null)
-            throw new IllegalArgumentException("Invalid Key properties.");
+    BuildingKey(SqlStatement statement) {
+        if (statement == null)
+            throw new IllegalArgumentException();
         this.param = "";
         this.type = Object.class;
         this.isRange = false;
-        this.query = query;
+        this.statement = statement;
     }
 
     BuildingKey(String param, Class<?> type) {
-        if (type == null || StringUtils.isBlank(param))
-            throw new IllegalArgumentException("Invalid Key properties.");
+        StringUtils.requireNonBlank(param);
+        if (type == null)
+            throw new IllegalArgumentException();
         this.param = param;
         this.type = type;
         this.isRange = false;
-        this.query = null;
+        this.statement = null;
     }
 
-    BuildingKey(String param, Class<?> type, SqlQuery query) {
-        if (type == null || StringUtils.isBlank(param))
-            throw new IllegalArgumentException("Invalid Key properties.");
+    BuildingKey(String param, Class<?> type, SqlStatement statement) {
+        StringUtils.requireNonBlank(param);
+        if (type == null)
+            throw new IllegalArgumentException();
         this.param = param;
         this.type = type;
         this.isRange = false;
-        this.query = query;
+        this.statement = statement;
     }
 
-    BuildingKey(String param, Class<?> type, boolean isRange, SqlQuery query) {
-        if (type == null || StringUtils.isBlank(param))
-            throw new IllegalArgumentException("Invalid Key properties.");
+    BuildingKey(String param, Class<?> type, boolean isRange, SqlStatement statement) {
+        StringUtils.requireNonBlank(param);
+        if (type == null)
+            throw new IllegalArgumentException();
         this.param = param;
         this.type = type;
         this.isRange = isRange;
-        this.query = query;
+        this.statement = statement;
     }
 
     @Override
     public SqlStatement getStatement() {
-        return query;
+        return statement;
     }
 
     @Override
@@ -399,12 +407,12 @@ public enum BuildingKey implements SqlKey {
     public boolean isScope() {
         return StringUtils.isBlank(getParamName())
                 && getType() == Object.class
-                && StringUtils.isBlank(query.getWhereColumn());
+                && statement != null;
     }
 
     @Override
     public boolean isMarker() {
-        return query == null;
+        return statement == null;
     }
 
     @Override

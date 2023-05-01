@@ -1,4 +1,4 @@
-package com.itblee.repository.builder;
+package com.itblee.sqlbuilder;
 
 public interface SqlKey {
     SqlStatement getStatement();

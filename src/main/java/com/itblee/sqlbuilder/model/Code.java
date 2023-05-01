@@ -1,9 +1,9 @@
-package com.itblee.repository.builder.util;
+package com.itblee.sqlbuilder.model;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
-public final class Code implements Serializable, CharSequence {
+public class Code implements Serializable, CharSequence {
 
 	private static final long serialVersionUID = -979229696925868743L;
 	

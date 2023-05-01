@@ -1,4 +1,4 @@
-package com.itblee.utils;
+package com.itblee.util;
 
 import java.util.Map;
 

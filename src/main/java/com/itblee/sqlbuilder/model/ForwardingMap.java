@@ -1,4 +1,4 @@
-package com.itblee.repository.builder.util;
+package com.itblee.sqlbuilder.model;
 
 import java.io.Serializable;
 import java.util.Collection;
