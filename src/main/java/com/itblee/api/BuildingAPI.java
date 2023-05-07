@@ -1,45 +1,61 @@
 package com.itblee.api;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.itblee.exception.NoContentException;
+import com.itblee.model.BuildingModel;
+import com.itblee.model.response.BuildingSearchResponse;
+import com.itblee.service.BuildingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import com.itblee.bean.BuildingBean;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/building")
 public class BuildingAPI {
 
-	@GetMapping
-	public Object getBuilding(@RequestParam("id") Long id,
-								@RequestParam("name") String name,
-								@RequestParam("floorarea") Integer floorArea) {
-		return null;
-	}
-	
-	@GetMapping("/{buildingid}")
-	public Object getDetail(@PathVariable("buildingid") Long id) {
-		return null;
-	}
-	
-	@PostMapping
-	public Object createBuilding(@RequestBody BuildingBean building) {
-		return null;
-	}
-	
-	@PutMapping
-	public Object updateBuilding(@RequestBody BuildingBean building) {
-		return null;
-	}
-	
-	@DeleteMapping
-	public void deleteBuilding(@RequestBody Long[] ids) {
-		System.out.println("");
-	}
+    @Autowired
+    private BuildingService buildingService;
+
+    @GetMapping
+    public List<BuildingSearchResponse> getBuilding(
+            @RequestParam(required = false) Map<String, Object> params,
+            @RequestParam(required = false) Object[] types) {
+        if (types != null)
+            params.put("types", types);
+        List<BuildingSearchResponse> responses = buildingService.findByCondition(params);
+        if (responses.isEmpty())
+            throw new NoContentException("No buildings found.");
+        return responses;
+    }
+
+	/*@GetMapping
+	public List<BuildingSearchResponse> getBuilding(BuildingSearchRequest request) {
+		List<BuildingSearchResponse> responses = buildingService.findAll(request);
+		if (responses.isEmpty())
+			throw new NoContentException();
+		return responses;
+	}*/
+
+    @GetMapping("/{buildingid}")
+    public BuildingModel getDetail(@PathVariable("buildingid") Long id) {
+        Optional<BuildingModel> building = buildingService.findOne(id);
+        return building.orElseThrow(() -> new NoContentException("No building found."));
+    }
+
+    @PostMapping
+    public Object createBuilding(BuildingModel building) {
+        throw new UnsupportedOperationException();
+    }
+
+    @PutMapping
+    public Object updateBuilding(BuildingModel building) {
+        throw new UnsupportedOperationException();
+    }
+
+    @DeleteMapping
+    public void deleteBuilding(Long[] ids) {
+        throw new UnsupportedOperationException();
+    }
 }
