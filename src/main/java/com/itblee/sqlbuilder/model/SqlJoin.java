@@ -52,7 +52,7 @@ public class SqlJoin implements Serializable {
             return this;
         }
 
-        public Builder type(Type joinType) {
+        public Builder fieldType(Type joinType) {
             this.joinType = joinType;
             return this;
         }

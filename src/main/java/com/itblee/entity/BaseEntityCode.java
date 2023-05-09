@@ -7,9 +7,6 @@ public abstract class BaseEntityCode extends BaseEntity {
     private String name;
     private String code;
 
-    public BaseEntityCode() {
-    }
-
     public String getName() {
         return name;
     }

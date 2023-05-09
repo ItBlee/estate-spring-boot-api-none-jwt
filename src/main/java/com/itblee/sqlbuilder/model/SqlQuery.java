@@ -9,64 +9,46 @@ public class SqlQuery implements Serializable, SqlStatement {
 	
 	private static final long serialVersionUID = -4006437901874345613L;
 	
-	private final Set<String> selectColumn;
+	private final Set<?> selectColumn;
     private final Set<?> fromTable;
     private final Set<SqlJoin> join;
     private final Object whereColumn;
     private final String alias;
 
     public static final class Builder {
-        private Set<String> selectColumn = Collections.emptySet();
-        private Set<?> fromTable = Collections.emptySet();
-        private Set<SqlJoin> join = Collections.emptySet();
+        private Set<Object> selectColumn = new LinkedHashSet<>();
+        private Set<Object> fromTable = new LinkedHashSet<>();
+        private Set<SqlJoin> join = new LinkedHashSet<>();
         private Object whereColumn = null;
         private String alias = null;
 
-        public Builder select(String... selectColumn) {
-            this.selectColumn = Collections.unmodifiableSet(
-                    new LinkedHashSet<>(Arrays.asList(selectColumn))
-            );
-            return this;
-        }
-
-        public Builder from(String... fromTable) {
-            this.fromTable = Collections.unmodifiableSet(
-                    new LinkedHashSet<>(Arrays.asList(fromTable))
-            );
-            return this;
-        }
-        public Builder from(SqlQuery... fromTable) {
-            this.fromTable = Collections.unmodifiableSet(
-                    new LinkedHashSet<>(Arrays.asList(fromTable))
-            );
+        public Builder select(Object... selectColumn) {
+            for (Object o : selectColumn) {
+                if (o instanceof String || o instanceof SqlQuery)
+                    this.selectColumn.add(o);
+                else throw new IllegalArgumentException();
+            }
             return this;
         }
 
         public Builder from(Object... fromTable) {
-            Set<Object> set = new LinkedHashSet<>();
             for (Object o : fromTable) {
                 if (o instanceof String || o instanceof SqlQuery)
-                    set.add(o);
+                    this.fromTable.add(o);
                 else throw new IllegalArgumentException();
             }
-            this.fromTable = Collections.unmodifiableSet(set);
             return this;
         }
 
         public Builder joinWith(SqlJoin... join) {
-            this.join = Collections.unmodifiableSet(
-                    new LinkedHashSet<>(Arrays.asList(join))
-            );
+            this.join.addAll(Arrays.asList(join));
             return this;
         }
 
-        public Builder where(String whereColumn) {
-            this.whereColumn = whereColumn;
-            return this;
-        }
-
-        public Builder where(SqlQuery whereColumn) {
-            this.whereColumn = whereColumn;
+        public Builder where(Object whereColumn) {
+            if (whereColumn instanceof String || whereColumn instanceof SqlQuery)
+                this.whereColumn = whereColumn;
+            else throw new IllegalArgumentException();
             return this;
         }
 
@@ -78,6 +60,9 @@ public class SqlQuery implements Serializable, SqlStatement {
         public SqlQuery build() {
             if (fromTable.isEmpty())
                 throw new IllegalStateException();
+            this.selectColumn = Collections.unmodifiableSet(this.selectColumn);
+            this.fromTable = Collections.unmodifiableSet(this.fromTable);
+            this.join = Collections.unmodifiableSet(this.join);
             return new SqlQuery(this);
         }
 
@@ -95,7 +80,7 @@ public class SqlQuery implements Serializable, SqlStatement {
         this.alias = builder.alias;
     }
 
-    public Set<String> getSelectColumn() {
+    public Set<?> getSelectColumn() {
         return selectColumn;
     }
 
@@ -116,7 +101,7 @@ public class SqlQuery implements Serializable, SqlStatement {
     }
 
     @Override
-    public Set<String> getIdentifiers() {
+    public Set<?> getIdentifiers() {
         return getSelectColumn();
     }
 

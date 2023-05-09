@@ -37,7 +37,7 @@ public class SqlBuilderFactory {
         statements.entrySet().stream()
                 .filter(stmt -> stmt.getKey() instanceof SqlQuery)
                 .forEach(stmt -> queries.put((SqlQuery) stmt.getKey(), stmt.getValue()));
-        return new SqlQueryBuilderImpl(queries);
+        return new SqlQueryBuilder(queries);
     }
 
     private SqlBuilder newInsertBuilder() {

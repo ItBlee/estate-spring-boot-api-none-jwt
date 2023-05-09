@@ -36,10 +36,6 @@ public final class StringUtils {
         return false;
     }
 
-    public static String formatAlphaOnly(final String str) {
-        return str.replaceAll("[^a-zA-Z]", "");
-    }
-
     public static boolean containsIgnoreCase(String str, String search)     {
         if(str == null || search == null)
             return false;
@@ -58,6 +54,10 @@ public final class StringUtils {
             if (str.endsWith(s))
                 return str.trim().substring(0, str.length() - s.length());
         return str;
+    }
+
+    public static String capitalize(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
 }

@@ -324,12 +324,12 @@ CREATE TABLE `transaction` (
   `modifieddate` datetime DEFAULT NULL,
   `createdby` varchar(255) DEFAULT NULL,
   `modifiedby` varchar(255) DEFAULT NULL,
-  `type` bigint DEFAULT NULL,
+  `fieldType` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_customer_transaction` (`customerid`),
-  KEY `fk_transactiontype_transaction_idx` (`type`),
+  KEY `fk_transactiontype_transaction_idx` (`fieldType`),
   CONSTRAINT `fk_customer_transaction` FOREIGN KEY (`customerid`) REFERENCES `customer` (`id`),
-  CONSTRAINT `fk_transactiontype_transaction` FOREIGN KEY (`type`) REFERENCES `transactiontype` (`id`)
+  CONSTRAINT `fk_transactiontype_transaction` FOREIGN KEY (`fieldType`) REFERENCES `transactiontype` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

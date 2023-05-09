@@ -58,7 +58,7 @@ public final class CastUtils {
 
             return Optional.of(cls.cast(obj));
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid value type.");
+            throw new IllegalArgumentException("Invalid value type:" + e.getMessage());
         }
     }
 

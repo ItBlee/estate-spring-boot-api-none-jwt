@@ -11,9 +11,6 @@ public abstract class BaseEntityAudit extends BaseEntity {
     private String createdBy;
     private String modifiedBy;
 
-    public BaseEntityAudit() {
-    }
-
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -45,4 +42,5 @@ public abstract class BaseEntityAudit extends BaseEntity {
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
+
 }

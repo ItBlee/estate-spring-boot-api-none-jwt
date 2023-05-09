@@ -28,6 +28,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public Optional<BuildingModel> findOne(Long id) {
+        ValidateUtils.requireNonNull(id);
         SqlMap<BuildingKey> statements = new LinkedSqlMap<>();
         statements.addScope(BuildingKey.ALL);
         statements.put(BuildingKey.ID, id);

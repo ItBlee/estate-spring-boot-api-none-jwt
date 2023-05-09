@@ -14,10 +14,7 @@ public class User extends BaseEntityAudit {
     private String email;
     private Integer status;
 
-    private Set<Role> roles = new HashSet<>();
-
-    public User() {
-    }
+    private Set<Role> role = new HashSet<>();
 
     public String getUsername() {
         return username;
@@ -67,11 +64,11 @@ public class User extends BaseEntityAudit {
         this.status = status;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Set<Role> getRole() {
+        return role;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(Set<Role> role) {
+        this.role = role;
     }
 }

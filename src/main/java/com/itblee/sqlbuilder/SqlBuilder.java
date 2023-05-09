@@ -1,8 +1,13 @@
 package com.itblee.sqlbuilder;
 
+import com.itblee.sqlbuilder.impl.SqlQueryBuilders;
+import com.itblee.sqlbuilder.model.SqlQuery;
 import com.itblee.util.StringUtils;
+import com.itblee.util.ValidateUtils;
 
 import java.sql.SQLSyntaxErrorException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,7 +22,6 @@ public interface SqlBuilder {
         StringBuilder buildWhereClause() throws SQLSyntaxErrorException;
     }
 
-    interface Insert extends SqlBuilder {}
     interface Update extends SqlBuilder {}
     interface Delete extends SqlBuilder {}
 
@@ -28,4 +32,24 @@ public interface SqlBuilder {
                 .collect(Collectors.joining(delim));
         return new StringBuilder(format);
     }
+
+    static String buildSubQuery(SqlQuery query, Object value) throws SQLSyntaxErrorException {
+        ValidateUtils.requireNonNull(query);
+        StringBuilder clause = new StringBuilder();
+        Map<SqlQuery, ?> statement = Collections.singletonMap(query, value);
+        clause.append("(");
+        clause.append(SqlQueryBuilders.buildQuery(statement));
+        clause.append(")");
+        if (StringUtils.isNotBlank(query.getAlias()))
+            clause.append(" AS ").append(query.getAlias());
+        return clause.toString();
+    }
+
+    static String buildDerivedTable(SqlQuery query, Object value) throws SQLSyntaxErrorException {
+        ValidateUtils.requireNonNull(query);
+        if (StringUtils.isBlank(query.getAlias()))
+            throw new SQLSyntaxErrorException();
+        return buildSubQuery(query, value);
+    }
+
 }

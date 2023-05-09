@@ -1,19 +1,26 @@
-package com.itblee.sqlbuilder;
+package com.itblee.sqlbuilder.impl;
 
+import com.itblee.sqlbuilder.SqlBuilder;
 import com.itblee.sqlbuilder.model.Code;
 import com.itblee.sqlbuilder.model.Range;
 import com.itblee.sqlbuilder.model.SqlJoin;
 import com.itblee.sqlbuilder.model.SqlQuery;
-import com.itblee.util.StringUtils;
 import com.itblee.util.ValidateUtils;
 
 import java.sql.SQLSyntaxErrorException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public interface SqlQueryBuilder extends SqlBuilder.Query {
+public final class SqlQueryBuilders {
 
-    static String buildQuery(Map<SqlQuery, ?> statements) throws SQLSyntaxErrorException {
+    public SqlQueryBuilders() {
+        throw new AssertionError();
+    }
+
+    public static String buildQuery(Map<SqlQuery, ?> statements) throws SQLSyntaxErrorException {
         ValidateUtils.requireNonNull(statements);
         StringBuilder sql = new StringBuilder();
         Set<SqlQuery> queries = statements.keySet();
@@ -24,39 +31,35 @@ public interface SqlQueryBuilder extends SqlBuilder.Query {
         return sql.toString();
     }
 
-    static String buildSubQuery(SqlQuery query, Object value) throws SQLSyntaxErrorException {
-        ValidateUtils.requireNonNull(query);
-        StringBuilder clause = new StringBuilder();
-        Map<SqlQuery, ?> statement = Collections.singletonMap(query, value);
-        clause.append("(");
-        clause.append(SqlQueryBuilder.buildQuery(statement));
-        clause.append(")");
-        if (StringUtils.isNotBlank(query.getAlias()))
-            clause.append(" AS ").append(query.getAlias());
-        return clause.toString();
-    }
-
-    static StringBuilder buildSelectClause(Set<SqlQuery> queries) throws SQLSyntaxErrorException {
+    public static StringBuilder buildSelectClause(Set<SqlQuery> queries) throws SQLSyntaxErrorException {
         ValidateUtils.requireNonNull(queries);
-        Set<String> clauses = queries.stream()
+        Set<?> columns = queries.stream()
                 .flatMap(query -> query.getSelectColumn().stream())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<String> clauses = new LinkedHashSet<>();
+        for (Object col : columns) {
+            if (col instanceof String)
+                clauses.add((String) col);
+            else if (col instanceof SqlQuery)
+                clauses.add(SqlBuilder.buildSubQuery((SqlQuery) col, null));
+            else throw new SQLSyntaxErrorException();
+        }
         if (clauses.isEmpty())
             throw new SQLSyntaxErrorException("Wrong query structure.");
         return SqlBuilder.format(clauses, ", ").insert(0," SELECT ");
     }
 
-    static StringBuilder buildFromClause(Set<SqlQuery> queries) throws SQLSyntaxErrorException {
+    public static StringBuilder buildFromClause(Set<SqlQuery> queries) throws SQLSyntaxErrorException {
         ValidateUtils.requireNonNull(queries);
         Set<?> tables = queries.stream()
                 .flatMap(query -> query.getFromTable().stream())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         Set<String> clauses = new LinkedHashSet<>();
-        for (Object table : tables) {
-            if (table instanceof String)
-                clauses.add((String) table);
-            else if (table instanceof SqlQuery)
-                clauses.add(buildSubQuery((SqlQuery) table, null));
+        for (Object tbl : tables) {
+            if (tbl instanceof String)
+                clauses.add((String) tbl);
+            else if (tbl instanceof SqlQuery)
+                clauses.add(SqlBuilder.buildDerivedTable((SqlQuery) tbl, null));
             else throw new SQLSyntaxErrorException();
         }
         if (clauses.isEmpty())
@@ -64,7 +67,7 @@ public interface SqlQueryBuilder extends SqlBuilder.Query {
         return SqlBuilder.format(clauses, ", ").insert(0, " FROM ");
     }
 
-    static StringBuilder buildJoinClause(Set<SqlQuery> queries) throws SQLSyntaxErrorException {
+    public static StringBuilder buildJoinClause(Set<SqlQuery> queries) throws SQLSyntaxErrorException {
         ValidateUtils.requireNonNull(queries);
         Set<SqlJoin> joins = queries.stream()
                 .flatMap(query -> query.getJoin().stream())
@@ -76,7 +79,7 @@ public interface SqlQueryBuilder extends SqlBuilder.Query {
             if (joinTable instanceof String)
                 table = (String) joinTable;
             else if (joinTable instanceof SqlQuery)
-                table = buildSubQuery((SqlQuery) joinTable, null);
+                table = SqlBuilder.buildDerivedTable((SqlQuery) joinTable, null);
             else throw new SQLSyntaxErrorException();
             String clause = join.getJoinType().getKeyword()
                     + " " + table + " ON " + join.getJoinOn();
@@ -87,7 +90,7 @@ public interface SqlQueryBuilder extends SqlBuilder.Query {
         return SqlBuilder.format(clauses, " ").insert(0, " ");
     }
 
-    static StringBuilder buildWhereClause(Map<SqlQuery, ?> statements) throws SQLSyntaxErrorException {
+    public static StringBuilder buildWhereClause(Map<SqlQuery, ?> statements) throws SQLSyntaxErrorException {
         ValidateUtils.requireNonNull(statements);
         Set<String> clauses = new LinkedHashSet<>();
         //convert elements of Map(ConditionKey, value) to query clause after WHERE.
@@ -103,7 +106,7 @@ public interface SqlQueryBuilder extends SqlBuilder.Query {
             if (where instanceof String)
                 clause.append(query.getWhereColumn()).append(" ");
             else if (where instanceof SqlQuery)
-                clause.append("EXIST ").append(buildSubQuery((SqlQuery) where, null)).append(" ");
+                clause.append("EXIST ").append(SqlBuilder.buildSubQuery((SqlQuery) where, null)).append(" ");
             else throw new SQLSyntaxErrorException("Missing Where columns.");
 
             //add operator and values (example: building.name like "%abc%")

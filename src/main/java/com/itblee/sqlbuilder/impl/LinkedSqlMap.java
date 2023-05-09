@@ -8,8 +8,12 @@ import com.itblee.sqlbuilder.model.ForwardingMap;
 import com.itblee.sqlbuilder.model.Range;
 import com.itblee.util.*;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.itblee.sqlbuilder.model.Range.RANGE_FROM;
 import static com.itblee.sqlbuilder.model.Range.RANGE_TO;
@@ -80,7 +84,11 @@ public class LinkedSqlMap<K extends SqlKey> extends ForwardingMap<SqlStatement, 
             return;
         params.forEach((param, val) -> {
             String keyName = StringUtils.removeIfLast(param.toString(), RANGE_FROM, RANGE_TO);
-            K key = MapUtils.get(SqlKeyUtils.getInstance(kClass), keyName, kClass);
+            Map<String, SqlKey> keys = Arrays.stream(kClass.getEnumConstants())
+                    .filter(key -> !key.isScope())
+                    .collect(Collectors.toMap(SqlKey::getParamName, Function.identity(),
+                            (o1, o2) -> o1, () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)));
+            K key = MapUtils.get(keys, keyName, kClass);
             if (key == null)
                 throw new BadRequestException(param + ": Unsupported.");
             if (!key.isRange())

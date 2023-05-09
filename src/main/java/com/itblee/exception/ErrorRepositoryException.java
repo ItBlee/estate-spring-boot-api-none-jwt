@@ -13,4 +13,8 @@ public class ErrorRepositoryException extends RuntimeException{
 		super(cause);
 	}
 
+	public ErrorRepositoryException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

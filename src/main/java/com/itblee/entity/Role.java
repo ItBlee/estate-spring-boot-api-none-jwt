@@ -1,29 +1,46 @@
 package com.itblee.entity;
 
-public class Role extends BaseEntityAudit {
+import java.sql.Date;
+
+public class Role extends BaseEntityCode {
 
     private static final long serialVersionUID = 8813280777538544796L;
 
-    private String name;
-    private String code;
+    private Date createdDate;
+    private Date modifiedDate;
+    private String createdBy;
+    private String modifiedBy;
 
-    public Role() {
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
-    public String getName() {
-        return name;
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Date getModifiedDate() {
+        return modifiedDate;
     }
 
-    public String getCode() {
-        return code;
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 
 }

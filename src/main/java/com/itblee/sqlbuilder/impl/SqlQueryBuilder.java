@@ -1,6 +1,6 @@
 package com.itblee.sqlbuilder.impl;
 
-import com.itblee.sqlbuilder.SqlQueryBuilder;
+import com.itblee.sqlbuilder.SqlBuilder;
 import com.itblee.sqlbuilder.model.SqlQuery;
 
 import java.io.Serializable;
@@ -9,14 +9,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-class SqlQueryBuilderImpl implements Serializable, SqlQueryBuilder {
+class SqlQueryBuilder implements Serializable, SqlBuilder.Query {
 
     private static final long serialVersionUID = 6764670140121398972L;
 
     private final Map<SqlQuery, ?> statements;
     private String finalQuery;
 
-    public SqlQueryBuilderImpl(Map<SqlQuery, ?> statements) {
+    public SqlQueryBuilder(Map<SqlQuery, ?> statements) {
         this.statements = Collections.unmodifiableMap(statements);
     }
 
@@ -40,29 +40,29 @@ class SqlQueryBuilderImpl implements Serializable, SqlQueryBuilder {
 
     @Override
     public StringBuilder buildSelectClause() throws SQLSyntaxErrorException {
-        return SqlQueryBuilder.buildSelectClause(statements.keySet());
+        return SqlQueryBuilders.buildSelectClause(statements.keySet());
     }
 
     @Override
     public StringBuilder buildFromClause() throws SQLSyntaxErrorException {
-        return SqlQueryBuilder.buildFromClause(statements.keySet());
+        return SqlQueryBuilders.buildFromClause(statements.keySet());
     }
 
     @Override
     public StringBuilder buildJoinClause() throws SQLSyntaxErrorException {
-        return SqlQueryBuilder.buildJoinClause(statements.keySet());
+        return SqlQueryBuilders.buildJoinClause(statements.keySet());
     }
 
     @Override
     public StringBuilder buildWhereClause()  throws SQLSyntaxErrorException {
-        return SqlQueryBuilder.buildWhereClause(statements);
+        return SqlQueryBuilders.buildWhereClause(statements);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SqlQueryBuilderImpl)) return false;
-        SqlQueryBuilderImpl that = (SqlQueryBuilderImpl) o;
+        if (!(o instanceof SqlQueryBuilder)) return false;
+        SqlQueryBuilder that = (SqlQueryBuilder) o;
         return Objects.equals(statements, that.statements);
     }
 

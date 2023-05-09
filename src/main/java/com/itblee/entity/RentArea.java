@@ -7,9 +7,6 @@ public class RentArea extends BaseEntityAudit {
     private Integer value;
     private Long buildingID;
 
-    public RentArea() {
-    }
-
     public Integer getValue() {
         return value;
     }

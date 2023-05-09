@@ -24,12 +24,13 @@ public enum BuildingKey implements SqlKey {
     ),
 
     DISTRICT_CODE ("districtcode", Code.class, SqlQuery.builder()
-        .select("district.code AS \"districtCode\"",
-                "district.name AS \"districtName\"",
+        .select("district.id AS \"district.Id\"",
+                "district.code AS \"district.Code\"",
+                "district.name AS \"district.Name\"",
                 "building.districtid")
         .from("building")
         .joinWith(SqlJoin.builder()
-            .type(SqlJoin.Type.INNER_JOIN)
+            .fieldType(SqlJoin.Type.INNER_JOIN)
             .join("district")
             .on("building.districtid = district.id").done())
         .where("district.code").build()
@@ -90,29 +91,29 @@ public enum BuildingKey implements SqlKey {
     ),
 
     RENT_AREA ("rentarea", Integer.class, true, SqlQuery.builder()
-        .select("rentarea.id AS \"rentareaID\"",
-                "rentarea.value AS \"rentareaValue\"")
+        .select("rentarea.id AS \"rentarea.Id\"",
+                "rentarea.value AS \"rentarea.Value\"")
         .from("building")
         .joinWith(SqlJoin.builder()
-            .type(SqlJoin.Type.INNER_JOIN)
+            .fieldType(SqlJoin.Type.INNER_JOIN)
             .join("rentarea")
             .on("building.id = rentarea.buildingid").done())
         .where("rentarea.value").build()
     ),
 
     RENT_TYPES ("types", Code[].class, SqlQuery.builder()
-        .select("renttype.id AS \"renttypeID\"",
-                "renttype.code AS \"renttypeCode\"",
-                "renttype.name AS \"renttypeName\"")
+        .select("renttype.id AS \"renttype.Id\"",
+                "renttype.code AS \"renttype.Code\"",
+                "renttype.name AS \"renttype.Name\"")
         .from("building")
         .joinWith(
             SqlJoin.builder()
-            .type(SqlJoin.Type.INNER_JOIN)
+            .fieldType(SqlJoin.Type.INNER_JOIN)
             .join("buildingrenttype")
             .on("building.id = buildingrenttype.buildingid").done(),
 
             SqlJoin.builder()
-            .type(SqlJoin.Type.INNER_JOIN)
+            .fieldType(SqlJoin.Type.INNER_JOIN)
             .join("renttype")
             .on("renttype.id = buildingrenttype.renttypeid").done()
         )
@@ -120,38 +121,38 @@ public enum BuildingKey implements SqlKey {
     ),
 
     STAFF ("staffid", Long.class, SqlQuery.builder()
-        .select("ur.id AS \"userID\"",
-                "ur.fullname AS \"userFullName\"")
+        .select("user.id AS \"user.Id\"",
+                "user.fullname AS \"user.FullName\"")
         .from("building")
         .joinWith(
             SqlJoin.builder()
-            .type(SqlJoin.Type.INNER_JOIN)
+            .fieldType(SqlJoin.Type.INNER_JOIN)
             .join("assignmentbuilding")
             .on("building.id = assignmentbuilding.buildingid").done(),
 
             SqlJoin.builder()
-            .type(SqlJoin.Type.INNER_JOIN)
+            .fieldType(SqlJoin.Type.INNER_JOIN)
             .join(
                 SqlQuery.builder()
                 .select("user.id", "user.fullname")
                 .from("user")
                 .joinWith(
                     SqlJoin.builder()
-                    .type(SqlJoin.Type.INNER_JOIN)
+                    .fieldType(SqlJoin.Type.INNER_JOIN)
                     .join("user_role")
                     .on("user.id = user_role.userid").done(),
 
                     SqlJoin.builder()
-                    .type(SqlJoin.Type.INNER_JOIN)
+                    .fieldType(SqlJoin.Type.INNER_JOIN)
                     .join("role")
                     .on("role.id = user_role.roleid").done()
                 )
                 .where("role.code = \"staff\"")
-                .as("ur").build()
+                .as("user").build()
             )
-        .on("ur.id = assignmentbuilding.staffid").done()
+        .on("user.id = assignmentbuilding.staffid").done()
         )
-        .where("ur.id").build()
+        .where("user.id").build()
     ),
 
 
@@ -186,7 +187,6 @@ public enum BuildingKey implements SqlKey {
                 "building.name",
                 "building.street",
                 "building.ward",
-                "building.districtid",
                 "building.structure",
                 "building.numberofbasement",
                 "building.floorarea",
@@ -215,61 +215,62 @@ public enum BuildingKey implements SqlKey {
                 "building.createdby",
                 "building.modifieddate",
                 "building.modifiedby",
-                "district.code AS \"districtCode\"",
-                "district.name AS \"districtName\"",
-                "rentarea.id AS \"rentareaID\"",
-                "rentarea.value AS \"rentareaValue\"",
-                "renttype.id AS \"renttypeID\"",
-                "renttype.code AS \"renttypeCode\"",
-                "renttype.name AS \"renttypeName\"",
-                "ur.id AS \"userID\"",
-                "ur.fullname AS \"userFullName\""
+                "district.id AS \"district.Id\"",
+                "district.code AS \"district.Code\"",
+                "district.name AS \"district.Name\"",
+                "rentarea.id AS \"rentarea.Id\"",
+                "rentarea.value AS \"rentarea.Value\"",
+                "renttype.id AS \"renttype.Id\"",
+                "renttype.code AS \"renttype.Code\"",
+                "renttype.name AS \"renttype.Name\"",
+                "user.id AS \"user.Id\"",
+                "user.fullname AS \"user.FullName\""
         )
         .from("building")
         .joinWith(SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("district")
             .on("building.districtid = district.id").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("rentarea")
             .on("building.id = rentarea.buildingid").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("buildingrenttype")
             .on("building.id = buildingrenttype.buildingid").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("renttype")
             .on("renttype.id = buildingrenttype.renttypeid").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("assignmentbuilding")
             .on("building.id = assignmentbuilding.buildingid").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join(SqlQuery.builder()
                 .select("user.id", "user.fullname")
                 .from("user")
                 .joinWith(SqlJoin.builder()
-                    .type(SqlJoin.Type.INNER_JOIN)
+                    .fieldType(SqlJoin.Type.INNER_JOIN)
                     .join("user_role")
                     .on("user.id = user_role.userid").done(),
 
                          SqlJoin.builder()
-                    .type(SqlJoin.Type.INNER_JOIN)
+                    .fieldType(SqlJoin.Type.INNER_JOIN)
                     .join("role")
                     .on("role.id = user_role.roleid").done())
 
                 .where("role.code = \"staff\"")
-                .as("ur").build()
+                .as("user").build()
             )
-            .on("ur.id = assignmentbuilding.staffid").done()
+            .on("user.id = assignmentbuilding.staffid").done()
         ).build()
     ),
 
@@ -279,73 +280,73 @@ public enum BuildingKey implements SqlKey {
                 "building.name",
                 "building.street",
                 "building.ward",
-                "building.districtid",
                 "building.floorarea",
                 "building.rentprice",
                 "building.brokeragefee",
                 "building.managername",
                 "building.managerphone",
                 "building.createddate",
-                "district.code AS \"districtCode\"",
-                "district.name AS \"districtName\"",
-                "rentarea.id AS \"rentareaID\"",
-                "rentarea.value AS \"rentareaValue\"",
-                "renttype.id AS \"renttypeID\"",
-                "renttype.code AS \"renttypeCode\"",
-                "renttype.name AS \"renttypeName\"",
-                "ur.id AS \"userID\"",
-                "ur.fullname AS \"userFullName\""
+                "district.id AS \"district.Id\"",
+                "district.code AS \"district.Code\"",
+                "district.name AS \"district.Name\"",
+                "rentarea.id AS \"rentarea.Id\"",
+                "rentarea.value AS \"rentarea.Value\"",
+                "renttype.id AS \"renttype.Id\"",
+                "renttype.code AS \"renttype.Code\"",
+                "renttype.name AS \"renttype.Name\"",
+                "user.id AS \"user.Id\"",
+                "user.fullname AS \"user.FullName\""
         )
         .from("building")
         .joinWith(SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("district")
             .on("building.districtid = district.id").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("rentarea")
             .on("building.id = rentarea.buildingid").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("buildingrenttype")
             .on("building.id = buildingrenttype.buildingid").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("renttype")
             .on("renttype.id = buildingrenttype.renttypeid").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join("assignmentbuilding")
             .on("building.id = assignmentbuilding.buildingid").done(),
 
                 SqlJoin.builder()
-            .type(SqlJoin.Type.LEFT_JOIN)
+            .fieldType(SqlJoin.Type.LEFT_JOIN)
             .join(SqlQuery.builder()
                 .select("user.id", "user.fullname")
                 .from("user")
                 .joinWith(SqlJoin.builder()
-                    .type(SqlJoin.Type.INNER_JOIN)
+                    .fieldType(SqlJoin.Type.INNER_JOIN)
                     .join("user_role")
                     .on("user.id = user_role.userid").done(),
 
                         SqlJoin.builder()
-                    .type(SqlJoin.Type.INNER_JOIN)
+                    .fieldType(SqlJoin.Type.INNER_JOIN)
                     .join("role")
                     .on("role.id = user_role.roleid").done())
 
                 .where("role.code = \"staff\"")
-                .as("ur").build()
+                .as("user").build()
             )
-            .on("ur.id = assignmentbuilding.staffid").done()
+            .on("user.id = assignmentbuilding.staffid").done()
         ).build()
     );
 
     private final String param;
-    private final Class<?> type;
+    private final Class<?> fieldType;
     private final boolean isRange;
     private final SqlStatement statement;
 
@@ -353,37 +354,37 @@ public enum BuildingKey implements SqlKey {
         if (statement == null)
             throw new IllegalArgumentException();
         this.param = "";
-        this.type = Object.class;
+        this.fieldType = Object.class;
         this.isRange = false;
         this.statement = statement;
     }
 
-    BuildingKey(String param, Class<?> type) {
+    BuildingKey(String param, Class<?> fieldType) {
         StringUtils.requireNonBlank(param);
-        if (type == null)
+        if (fieldType == null)
             throw new IllegalArgumentException();
         this.param = param;
-        this.type = type;
+        this.fieldType = fieldType;
         this.isRange = false;
         this.statement = null;
     }
 
-    BuildingKey(String param, Class<?> type, SqlStatement statement) {
+    BuildingKey(String param, Class<?> fieldType, SqlStatement statement) {
         StringUtils.requireNonBlank(param);
-        if (type == null)
+        if (fieldType == null)
             throw new IllegalArgumentException();
         this.param = param;
-        this.type = type;
+        this.fieldType = fieldType;
         this.isRange = false;
         this.statement = statement;
     }
 
-    BuildingKey(String param, Class<?> type, boolean isRange, SqlStatement statement) {
+    BuildingKey(String param, Class<?> fieldType, boolean isRange, SqlStatement statement) {
         StringUtils.requireNonBlank(param);
-        if (type == null)
+        if (fieldType == null)
             throw new IllegalArgumentException();
         this.param = param;
-        this.type = type;
+        this.fieldType = fieldType;
         this.isRange = isRange;
         this.statement = statement;
     }
@@ -400,7 +401,7 @@ public enum BuildingKey implements SqlKey {
 
     @Override
     public Class<?> getType() {
-        return type;
+        return fieldType;
     }
 
     @Override

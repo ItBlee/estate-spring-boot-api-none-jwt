@@ -5,12 +5,7 @@ import com.itblee.model.response.BuildingSearchResponse;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-public interface BuildingService {
-    Optional<BuildingModel> findOne(Long id);
+public interface BuildingService extends GenericService<BuildingModel> {
     List<BuildingSearchResponse> findByCondition(Map<String, ?> params);
-    Long save(BuildingModel dto);
-    void update(BuildingModel dto);
-    void delete(Long id);
 }

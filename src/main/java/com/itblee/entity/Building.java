@@ -36,13 +36,10 @@ public class Building extends BaseEntityAudit {
     private String map;
     private String image;
 
-    private District district = new District();
-    private Set<RentArea> rentAreas = new HashSet<>();
-    private Set<RentType> rentTypes = new HashSet<>();
-    private Set<User> assignUsers = new HashSet<>();
-
-    public Building() {
-    }
+    private District district;
+    private Set<RentArea> rentArea = new HashSet<>();
+    private Set<RentType> rentType = new HashSet<>();
+    private Set<User> user = new HashSet<>();
 
     public String getName() {
         return name;
@@ -276,27 +273,27 @@ public class Building extends BaseEntityAudit {
         this.district = district;
     }
 
-    public Set<RentArea> getRentAreas() {
-        return rentAreas;
+    public Set<RentArea> getRentArea() {
+        return rentArea;
     }
 
-    public void setRentAreas(Set<RentArea> rentAreas) {
-        this.rentAreas = rentAreas;
+    public void setRentArea(Set<RentArea> rentArea) {
+        this.rentArea = rentArea;
     }
 
-    public Set<RentType> getRentTypes() {
-        return rentTypes;
+    public Set<RentType> getRentType() {
+        return rentType;
     }
 
-    public void setRentTypes(Set<RentType> rentTypes) {
-        this.rentTypes = rentTypes;
+    public void setRentType(Set<RentType> rentType) {
+        this.rentType = rentType;
     }
 
-    public Set<User> getAssignUsers() {
-        return assignUsers;
+    public Set<User> getUser() {
+        return user;
     }
 
-    public void setAssignUsers(Set<User> assignUsers) {
-        this.assignUsers = assignUsers;
+    public void setUser(Set<User> user) {
+        this.user = user;
     }
 }
