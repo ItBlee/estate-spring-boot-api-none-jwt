@@ -1,13 +1,13 @@
 package com.itblee.service.impl;
 
 import com.itblee.converter.BuildingConverter;
-import com.itblee.entity.Building;
 import com.itblee.model.BuildingModel;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.sqlbuilder.SqlMap;
-import com.itblee.sqlbuilder.impl.LinkedSqlMap;
-import com.itblee.sqlbuilder.key.BuildingKey;
+import com.itblee.repository.entity.Building;
+import com.itblee.repository.sqlbuilder.SqlMap;
+import com.itblee.repository.sqlbuilder.impl.LinkedSqlMap;
+import com.itblee.repository.sqlbuilder.key.BuildingKey;
 import com.itblee.service.BuildingService;
 import com.itblee.util.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,22 @@ public class BuildingServiceImpl implements BuildingService {
         statements.addScope(BuildingKey.SHORTEN);
         statements.putAll(params, BuildingKey.class);
         List<Building> results = buildingRepository.findByCondition(statements);
-        return buildingConverter.toResponse(results);
+        return buildingConverter.toSearchResponse(results);
+    }
+
+    @Override
+    public Long save(BuildingModel dto) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void update(BuildingModel dto) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void delete(Long id) {
+        throw new UnsupportedOperationException();
     }
 
     /*@Override
@@ -67,20 +82,5 @@ public class BuildingServiceImpl implements BuildingService {
         List<Building> buildings = buildingRepository.findByConditions(conditions);
         return buildingMapper.toResponse(buildings);
     }*/
-
-    @Override
-    public Long save(BuildingModel dto) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void update(BuildingModel dto) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete(Long id) {
-        throw new UnsupportedOperationException();
-    }
 
 }

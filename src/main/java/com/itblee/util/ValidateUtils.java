@@ -1,6 +1,6 @@
 package com.itblee.util;
 
-import com.itblee.sqlbuilder.model.Range;
+import com.itblee.repository.sqlbuilder.model.Range;
 
 import java.sql.Date;
 import java.util.Map;

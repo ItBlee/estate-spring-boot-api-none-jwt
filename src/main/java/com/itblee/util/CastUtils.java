@@ -1,6 +1,6 @@
 package com.itblee.util;
 
-import com.itblee.sqlbuilder.model.Code;
+import com.itblee.repository.sqlbuilder.model.Code;
 
 import java.sql.Date;
 import java.util.Arrays;
@@ -16,10 +16,10 @@ public final class CastUtils {
     }
 
     public static <T> Optional<T> cast(final Object o, Class<T> cls) {
-        if (cls == null)
-            throw new ClassCastException("Couldn't cast to null.");
         if (o == null)
             return Optional.empty();
+        if (cls == null)
+            throw new ClassCastException("Couldn't cast to null.");
         if (cls.isInstance(o))
             return Optional.of(cls.cast(o));
 

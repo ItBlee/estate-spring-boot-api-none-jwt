@@ -1,12 +1,12 @@
 package com.itblee.repository.impl;
 
-import com.itblee.entity.Building;
 import com.itblee.exception.ErrorRepositoryException;
 import com.itblee.repository.BuildingRepository;
-import com.itblee.sqlbuilder.SqlBuilder;
-import com.itblee.sqlbuilder.SqlMap;
-import com.itblee.sqlbuilder.impl.SqlBuilderFactory;
-import com.itblee.sqlbuilder.SqlExecutor;
+import com.itblee.repository.entity.Building;
+import com.itblee.repository.sqlbuilder.SqlBuilder;
+import com.itblee.repository.sqlbuilder.SqlExecutor;
+import com.itblee.repository.sqlbuilder.SqlMap;
+import com.itblee.repository.sqlbuilder.impl.SqlBuilderFactory;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLSyntaxErrorException;
@@ -19,29 +19,15 @@ public class BuildingRepositoryImpl implements BuildingRepository {
     @Override
     public List<Building> findByCondition(Map<?, ?> conditions) {
         SqlMap<?> statements = (SqlMap<?>) conditions;
-        SqlBuilderFactory factory = new SqlBuilderFactory(statements);
-        SqlBuilder builder = factory.getInstance("query");
+        SqlBuilderFactory factory = SqlBuilderFactory.newInstance("query", statements);
+        SqlBuilder builder = factory.getBuilder();
+        SqlExecutor executor = factory.getExecutor();
         try {
             String sql = builder.build();
-            return SqlExecutor.query(sql, Building.class);
+            return executor.executeQuery(sql, Building.class);
         } catch (SQLSyntaxErrorException e) {
             throw new ErrorRepositoryException(e);
         }
-    }
-
-    @Override
-    public Long save(Building entity) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void update(Building entity) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete(Long id) {
-        throw new UnsupportedOperationException();
     }
 
     /*@Override

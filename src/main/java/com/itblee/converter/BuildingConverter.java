@@ -1,8 +1,8 @@
 package com.itblee.converter;
 
-import com.itblee.entity.Building;
 import com.itblee.model.BuildingModel;
 import com.itblee.model.response.BuildingSearchResponse;
+import com.itblee.repository.entity.Building;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 
 public interface BuildingConverter {
 
-	BuildingSearchResponse toResponse(Building entity);
-	default List<BuildingSearchResponse> toResponse(Collection<Building> entities) {
+	BuildingSearchResponse toSearchResponse(Building entity);
+	default List<BuildingSearchResponse> toSearchResponse(Collection<Building> entities) {
 		return entities.stream()
-				.map(this::toResponse)
+				.map(this::toSearchResponse)
 				.collect(Collectors.toList());
 	}
 

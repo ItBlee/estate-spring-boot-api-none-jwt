@@ -1,7 +1,7 @@
 package com.itblee.converter.impl;
 
 import com.itblee.converter.BuildingConverter;
-import com.itblee.entity.*;
+import com.itblee.repository.entity.*;
 import com.itblee.model.*;
 import com.itblee.model.response.BuildingSearchResponse;
 import com.itblee.util.StringUtils;
@@ -16,7 +16,7 @@ import java.util.List;
 public class BuildingConverterImpl extends AbstractConverter implements BuildingConverter {
 
     @Override
-    public BuildingSearchResponse toResponse(Building entity) {
+    public BuildingSearchResponse toSearchResponse(Building entity) {
         ValidateUtils.requireNonNull(entity);
         BuildingSearchResponse response = convert(entity, BuildingSearchResponse.class);
         List<RentAreaModel> rentAreas = convert(entity.getRentArea(), RentAreaModel.class);
@@ -37,18 +37,18 @@ public class BuildingConverterImpl extends AbstractConverter implements Building
     @Override
     public BuildingModel toModel(Building entity) {
         ValidateUtils.requireNonNull(entity);
-        BuildingModel dto = convert(entity, BuildingModel.class);
+        BuildingModel model = convert(entity, BuildingModel.class);
         {
             DistrictModel district = convert(entity.getDistrict(), DistrictModel.class);
             List<RentAreaModel> rentAreas = convert(entity.getRentArea(), RentAreaModel.class);
             List<RentTypeModel> rentTypes = convert(entity.getRentType(), RentTypeModel.class);
             List<AssignUserModel> assignUsers = convert(entity.getUser(), AssignUserModel.class);
-            dto.setDistrict(district);
-            dto.setRentAreas(rentAreas);
-            dto.setRentTypes(rentTypes);
-            dto.setAssignUsers(assignUsers);
+            model.setDistrict(district);
+            model.setRentAreas(rentAreas);
+            model.setRentTypes(rentTypes);
+            model.setAssignUsers(assignUsers);
         }
-        return dto;
+        return model;
     }
 
     @Override

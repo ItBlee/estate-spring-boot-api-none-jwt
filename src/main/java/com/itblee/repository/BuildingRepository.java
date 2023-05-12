@@ -1,7 +1,12 @@
 package com.itblee.repository;
 
-import com.itblee.entity.Building;
+import com.itblee.repository.entity.Building;
 
-public interface BuildingRepository extends GenericRepository<Building> {
+import java.util.List;
+import java.util.Map;
+
+public interface BuildingRepository extends GenericRepository<Building, Long> {
+
+    List<Building> findByCondition(Map<?, ?> conditions);
 
 }
