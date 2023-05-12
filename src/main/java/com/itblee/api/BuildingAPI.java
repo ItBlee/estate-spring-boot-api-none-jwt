@@ -22,21 +22,12 @@ public class BuildingAPI {
     public List<BuildingSearchResponse> getBuilding(
             @RequestParam(required = false) Map<String, Object> params,
             @RequestParam(required = false) Object[] types) {
-        if (types != null)
-            params.put("types", types);
+        params.computeIfAbsent("types", param -> types);
         List<BuildingSearchResponse> responses = buildingService.findByCondition(params);
         if (responses.isEmpty())
             throw new NoContentException("No buildings found.");
         return responses;
     }
-
-	/*@GetMapping
-	public List<BuildingSearchResponse> getBuilding(BuildingSearchRequest request) {
-		List<BuildingSearchResponse> responses = buildingService.findAll(request);
-		if (responses.isEmpty())
-			throw new NoContentException();
-		return responses;
-	}*/
 
     @GetMapping("/{buildingid}")
     public BuildingModel getDetail(@PathVariable("buildingid") Long id) {
@@ -58,4 +49,5 @@ public class BuildingAPI {
     public void deleteBuilding(Long[] ids) {
         throw new UnsupportedOperationException();
     }
+
 }

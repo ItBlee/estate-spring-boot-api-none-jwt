@@ -1,6 +1,6 @@
 package com.itblee.util;
 
-import com.itblee.sqlbuilder.model.Code;
+import com.itblee.repository.sqlbuilder.model.Code;
 
 import java.sql.Date;
 import java.util.Arrays;
