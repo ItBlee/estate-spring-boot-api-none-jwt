@@ -91,7 +91,7 @@ public enum BuildingKey implements SqlKey {
         .where("building.numberofbasement").build()
     ),
 
-    RENT_AREA ("rentarea", Range.class, SqlQuery.builder()
+    /*RENT_AREA ("rentarea", Range.class, SqlQuery.builder()
         .select("rentarea.id AS \"rentarea.Id\"",
                 "rentarea.value AS \"rentarea.Value\"")
         .from("building")
@@ -100,6 +100,19 @@ public enum BuildingKey implements SqlKey {
             .join("rentarea")
             .on("building.id = rentarea.buildingid").done())
         .where("rentarea.value").build()
+    ),*/
+
+    RENT_AREA ("rentarea", Range.class, SqlQuery.builder()
+            .select("rentarea.id AS \"rentarea.Id\"",
+                    "rentarea.value AS \"rentarea.Value\"")
+            .from("building")
+            .where(SqlQuery.builder()
+                    .select("*")
+                    .from("rentarea")
+                    .whereWithoutValue("rentarea.buildingid = building.id")
+                    .where("rentarea.value")
+                    .build()
+            ).build()
     ),
 
     RENT_TYPES ("types", Code[].class, SqlQuery.builder()
@@ -151,7 +164,7 @@ public enum BuildingKey implements SqlKey {
                 .where("role.code = \"staff\"")
                 .as("user").build()
             )
-        .on("user.id = assignmentbuilding.staffid").done()
+            .on("user.id = assignmentbuilding.staffid").done()
         )
         .where("user.id").build()
     ),

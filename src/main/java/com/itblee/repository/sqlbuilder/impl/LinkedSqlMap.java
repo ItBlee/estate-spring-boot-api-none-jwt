@@ -6,7 +6,10 @@ import com.itblee.repository.sqlbuilder.SqlMap;
 import com.itblee.repository.sqlbuilder.SqlStatement;
 import com.itblee.repository.sqlbuilder.model.ForwardingMap;
 import com.itblee.repository.sqlbuilder.model.Range;
-import com.itblee.util.*;
+import com.itblee.util.CastUtils;
+import com.itblee.util.MapUtils;
+import com.itblee.util.StringUtils;
+import com.itblee.util.ValidateUtils;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -63,8 +66,8 @@ public class LinkedSqlMap<K extends SqlKey> extends ForwardingMap<SqlStatement, 
         try {
             if (key.isMarker() || key.isScope())
                 throw new IllegalStateException("Unsupported param.");
-            Number fromNum = (Number) CastUtils.cast(from, key.getType()).orElse(null);
-            Number toNum = (Number) CastUtils.cast(to, key.getType()).orElse(null);
+            Number fromNum = CastUtils.cast(from, Integer.class).orElse(null);
+            Number toNum = CastUtils.cast(to, Integer.class).orElse(null);
             return (Range) super.put(key.getStatement(), Range.valueOf(fromNum, toNum));
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw new BadRequestException(key.getParamName() + " invalid: " + e.getMessage());

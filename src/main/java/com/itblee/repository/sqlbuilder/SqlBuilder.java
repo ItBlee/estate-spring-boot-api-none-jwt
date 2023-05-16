@@ -19,6 +19,9 @@ public interface SqlBuilder {
         StringBuilder buildFromClause() throws SQLSyntaxErrorException;
         StringBuilder buildJoinClause() throws SQLSyntaxErrorException;
         StringBuilder buildWhereClause() throws SQLSyntaxErrorException;
+        StringBuilder buildGroupByClause() throws SQLSyntaxErrorException;
+        StringBuilder buildHavingClause() throws SQLSyntaxErrorException;
+        StringBuilder buildOrderByClause() throws SQLSyntaxErrorException;
     }
 
     interface Update extends SqlBuilder {}

@@ -1,4 +1,4 @@
-package com.itblee.converter.impl;
+package com.itblee.converter;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

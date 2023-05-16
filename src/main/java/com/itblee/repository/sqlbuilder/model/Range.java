@@ -22,4 +22,5 @@ public class Range implements Serializable {
             throw new IllegalArgumentException("FROM value is greater than TO value");
         return new Range(from, to);
     }
+
 }

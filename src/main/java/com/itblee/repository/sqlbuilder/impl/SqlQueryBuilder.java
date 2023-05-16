@@ -38,6 +38,9 @@ class SqlQueryBuilder implements Serializable, SqlBuilder.Query {
         sql.append(buildFromClause());
         sql.append(buildJoinClause());
         sql.append(buildWhereClause());
+        sql.append(buildGroupByClause());
+        sql.append(buildHavingClause());
+        sql.append(buildOrderByClause());
         if (DEBUG_PRINT_RESULTS)
             System.out.println("\n" + new SqlFormatter().format(sql.toString()));
         return sql.toString();
@@ -61,6 +64,21 @@ class SqlQueryBuilder implements Serializable, SqlBuilder.Query {
     @Override
     public StringBuilder buildWhereClause()  throws SQLSyntaxErrorException {
         return QueryBuilder.buildWhereClause(statements);
+    }
+
+    @Override
+    public StringBuilder buildGroupByClause() throws SQLSyntaxErrorException {
+        return QueryBuilder.buildGroupByClause(statements.keySet());
+    }
+
+    @Override
+    public StringBuilder buildHavingClause() throws SQLSyntaxErrorException {
+        return QueryBuilder.buildHavingClause(statements.keySet());
+    }
+
+    @Override
+    public StringBuilder buildOrderByClause() throws SQLSyntaxErrorException {
+        return QueryBuilder.buildOrderByClause(statements.keySet());
     }
 
     @Override
