@@ -190,14 +190,18 @@ public class SqlQuery implements Serializable, SqlStatement {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SqlQuery)) return false;
-        SqlQuery sqlQuery = (SqlQuery) o;
-        return Objects.equals(getSelectColumn(), sqlQuery.getSelectColumn())
-                && getFromTable().equals(sqlQuery.getFromTable())
-                && Objects.equals(getJoin(), sqlQuery.getJoin());
+        SqlQuery query = (SqlQuery) o;
+        return getSelectColumn().equals(query.getSelectColumn())
+                && getFromTable().equals(query.getFromTable())
+                && Objects.equals(getJoin(), query.getJoin())
+                && Objects.equals(getWhereColumn(), query.getWhereColumn())
+                && Objects.equals(getGroupByColumn(), query.getGroupByColumn())
+                && Objects.equals(getHavingClauses(), query.getHavingClauses())
+                && Objects.equals(getOrderByColumn(), query.getOrderByColumn());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSelectColumn(), getFromTable(), getJoin());
+        return Objects.hash(getSelectColumn(), getFromTable(), getJoin(), getWhereColumn(), getGroupByColumn(), getHavingClauses(), getOrderByColumn());
     }
 }
