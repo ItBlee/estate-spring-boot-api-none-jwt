@@ -40,11 +40,12 @@ public final class QueryBuilder {
                 clauses.add((String) col);
             else if (col instanceof SqlQuery)
                 clauses.add(SqlBuilder.buildSubQuery((SqlQuery) col, null));
-            else throw new SQLSyntaxErrorException();
+            else
+                throw new SQLSyntaxErrorException();
         }
         if (clauses.isEmpty())
             throw new SQLSyntaxErrorException("Wrong query structure.");
-        return SqlBuilder.merge(clauses, ", ").insert(0," SELECT ");
+        return SqlBuilder.merge(clauses, ", ").insert(0, " SELECT ");
     }
 
     public static StringBuilder buildFromClause(Set<SqlQuery> queries) throws SQLSyntaxErrorException {
@@ -58,7 +59,8 @@ public final class QueryBuilder {
                 clauses.add((String) tbl);
             else if (tbl instanceof SqlQuery)
                 clauses.add(SqlBuilder.buildDerivedTable((SqlQuery) tbl, null));
-            else throw new SQLSyntaxErrorException();
+            else
+                throw new SQLSyntaxErrorException();
         }
         if (clauses.isEmpty())
             throw new SQLSyntaxErrorException("Wrong query structure.");
@@ -78,7 +80,8 @@ public final class QueryBuilder {
                 table = (String) joinTable;
             else if (joinTable instanceof SqlQuery)
                 table = SqlBuilder.buildDerivedTable((SqlQuery) joinTable, null);
-            else throw new SQLSyntaxErrorException();
+            else
+                throw new SQLSyntaxErrorException();
             String clause = join.getJoinType().getKeyword()
                     + " " + table + " ON " + join.getJoinOn();
             clauses.add(clause);
@@ -108,7 +111,7 @@ public final class QueryBuilder {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         if (clauses.isEmpty())
             return new StringBuilder();
-        return SqlBuilder.merge(clauses, ", ").insert(0," GROUP BY ");
+        return SqlBuilder.merge(clauses, ", ").insert(0, " GROUP BY ");
     }
 
     public static StringBuilder buildHavingClause(Set<SqlQuery> queries) throws SQLSyntaxErrorException {
@@ -117,7 +120,7 @@ public final class QueryBuilder {
         Map<String, LogicalOperators> havingClauses = queries.stream()
                 .flatMap(query -> query.getHavingClauses().entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        List<String> clauses  = new ArrayList<>(havingClauses.keySet());
+        List<String> clauses = new ArrayList<>(havingClauses.keySet());
         List<LogicalOperators> operators = new ArrayList<>(havingClauses.values());
         if (clauses.isEmpty())
             return new StringBuilder();
@@ -143,13 +146,14 @@ public final class QueryBuilder {
                     boolean isAscendingOrder = orderBy.getValue();
                     if (isAscendingOrder)
                         clause += " ASC";
-                    else clause += " DESC";
+                    else
+                        clause += " DESC";
                     return clause;
                 })
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         if (clauses.isEmpty())
             return new StringBuilder();
-        return SqlBuilder.merge(clauses, ", ").insert(0," ORDER BY ");
+        return SqlBuilder.merge(clauses, ", ").insert(0, " ORDER BY ");
     }
 
     private static class Condition {
@@ -165,8 +169,10 @@ public final class QueryBuilder {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Condition)) return false;
+            if (this == o)
+                return true;
+            if (!(o instanceof Condition))
+                return false;
             Condition condition = (Condition) o;
             return identifier.equals(condition.identifier);
         }
@@ -191,13 +197,17 @@ public final class QueryBuilder {
             if (val.getClass().isArray()) {
                 if (numberOfConditionsRequireValue != ((Object[]) val).length)
                     throw new SQLSyntaxErrorException("number of value not match conditions.");
-                else values.addAll(Arrays.asList((Object[]) val));
+                else
+                    values.addAll(Arrays.asList((Object[]) val));
             } else if (val instanceof Collection) {
                 if (numberOfConditionsRequireValue != ((Collection<?>) val).size())
                     throw new SQLSyntaxErrorException("number of value not match conditions.");
-                else values.addAll((Collection<?>) val);
-            } else throw new SQLSyntaxErrorException("number of value not match conditions.");
-        } else values.add(val);
+                else
+                    values.addAll((Collection<?>) val);
+            } else
+                throw new SQLSyntaxErrorException("number of value not match conditions.");
+        } else
+            values.add(val);
 
         Set<Condition> conditions = new LinkedHashSet<>();
         IntStream.range(0, operators.size()).forEach(i -> {
@@ -231,19 +241,30 @@ public final class QueryBuilder {
         Object identifier = condition.identifier;
         Object value = condition.value;
 
-        //add column name (example: building.name)
+        // add column name (example: building.name)
         if (identifier instanceof String)
             clause.append(identifier).append(" ");
         else if (identifier instanceof SqlQuery)
             return clause.append(LogicalOperators.EXISTS).append(" ")
                     .append(SqlBuilder.buildSubQuery((SqlQuery) identifier, value)).append(" ");
-        else throw new SQLSyntaxErrorException("Missing Where columns.");
+        else
+            throw new SQLSyntaxErrorException("Missing Where columns.");
 
         if (value == null)
             return new StringBuilder();
         if (value.equals(LogicalOperators.NON_VALUE))
             return clause;
-        //add operator and values (example: building.name like "%abc%")
+
+        /*
+         * value type
+         * subQuery: exist()
+         * code: =''
+         * string: like'%%'
+         * num: =0
+         * arr[]: in(,,)
+         * code[]: ... or ... or ...
+         * range: between, <=, >=
+         */
         if (value instanceof Code) {
             clause.append("= '").append(value).append("'");
         } else if (value instanceof CharSequence) {
@@ -251,22 +272,37 @@ public final class QueryBuilder {
         } else if (value instanceof Number) {
             clause.append("= ").append(value);
         } else if (value.getClass().isArray()) {
-            String join = Arrays.stream(((Object[]) value))
-                    .filter(o -> o instanceof CharSequence)
-                    .map(o -> "'" + o + "'")
-                    .collect(Collectors.joining(","));
-            clause.append(LogicalOperators.IN).append(" (").append(join).append(")");
+            if (value instanceof Code[]) {
+                List<String> orClauses = Arrays.stream(((Code[]) value))
+                        .map(code -> identifier + " " + LogicalOperators.LIKE + " '%" + code + "%'")
+                        .collect(Collectors.toList());
+                String join = String.join(" " + LogicalOperators.OR + " ", orClauses);
+                clause = new StringBuilder();
+                int singleClause = 1;
+                if (orClauses.size() != singleClause)
+                    clause.append("(").append(join).append(")");
+                else
+                    clause.append(join);
+            } else {
+                String join = Arrays.stream(((Object[]) value))
+                        .filter(o -> o instanceof CharSequence)
+                        .map(o -> "'" + o + "'")
+                        .collect(Collectors.joining(","));
+                clause.append(LogicalOperators.IN).append(" (").append(join).append(")");
+            }
         } else if (value instanceof Range) {
             Range range = (Range) value;
             if (range.from == null)
                 clause.append("<= ").append(range.to);
             else if (range.to == null)
                 clause.append(">= ").append(range.from);
-            else clause.append(LogicalOperators.BETWEEN).append(" ")
+            else
+                clause.append(LogicalOperators.BETWEEN).append(" ")
                         .append(range.from)
                         .append(" ").append(LogicalOperators.AND).append(" ")
                         .append(range.to);
-        } else throw new IllegalStateException("Value type unsupported.");
+        } else
+            throw new IllegalStateException("Value type unsupported.");
         return clause;
     }
 
