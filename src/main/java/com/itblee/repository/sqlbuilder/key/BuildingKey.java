@@ -2,13 +2,11 @@ package com.itblee.repository.sqlbuilder.key;
 
 import com.itblee.repository.sqlbuilder.SqlKey;
 import com.itblee.repository.sqlbuilder.SqlStatement;
+import com.itblee.repository.sqlbuilder.model.Code;
 import com.itblee.repository.sqlbuilder.model.Range;
 import com.itblee.repository.sqlbuilder.model.SqlJoin;
 import com.itblee.repository.sqlbuilder.model.SqlQuery;
-import com.itblee.repository.sqlbuilder.model.Code;
 import com.itblee.util.StringUtils;
-
-import java.sql.Date;
 
 public enum BuildingKey implements SqlKey {
 
@@ -171,7 +169,7 @@ public enum BuildingKey implements SqlKey {
 
 
     //MAKER
-    MAP ("map", String.class),
+    /*MAP ("map", String.class),
     NOTE ("note", String.class),
     IMAGE ("image", String.class),
     CAR_FEE ("carfee", String.class),
@@ -192,8 +190,14 @@ public enum BuildingKey implements SqlKey {
     DECORATION_TIME ("decorationtime", String.class),
     ELECTRICITY_FEE ("electricityfee", String.class),
     LINK_OF_BUILDING ("linkofbuilding", String.class),
-    RENT_PRICE_DESCRIPTION ("rentpricedescription", String.class),
+    RENT_PRICE_DESCRIPTION ("rentpricedescription", String.class),*/
 
+
+    //SCOPE
+    COUNT (SqlQuery.builder()
+        .select("count(DISTINCT building.id) AS count")
+        .from("building").build()
+    ),
 
     //SCOPE
     ALL (SqlQuery.builder()
@@ -371,14 +375,14 @@ public enum BuildingKey implements SqlKey {
         this.statement = statement;
     }
 
-    BuildingKey(String param, Class<?> fieldType) {
+    /*BuildingKey(String param, Class<?> fieldType) {
         StringUtils.requireNonBlank(param);
         if (fieldType == null)
             throw new IllegalArgumentException();
         this.param = param;
         this.fieldType = fieldType;
         this.statement = null;
-    }
+    }*/
 
     BuildingKey(String param, Class<?> fieldType, SqlStatement statement) {
         StringUtils.requireNonBlank(param);
@@ -411,9 +415,9 @@ public enum BuildingKey implements SqlKey {
                 && statement != null;
     }
 
-    @Override
+    /*@Override
     public boolean isMarker() {
         return statement == null;
-    }
+    }*/
 
 }

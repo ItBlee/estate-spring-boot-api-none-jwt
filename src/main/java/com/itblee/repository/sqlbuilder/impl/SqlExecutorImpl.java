@@ -1,7 +1,6 @@
 package com.itblee.repository.sqlbuilder.impl;
 
 import com.itblee.exception.ErrorRepositoryException;
-import com.itblee.repository.entity.BaseEntity;
 import com.itblee.repository.sqlbuilder.SqlExecutor;
 import com.itblee.repository.sqlbuilder.SqlExtractor;
 import com.itblee.util.ConnectionUtils;
@@ -18,7 +17,7 @@ public class SqlExecutorImpl implements SqlExecutor {
     }
 
     @Override
-    public <T extends BaseEntity> List<T> executeQuery(String sql, Class<T> entityClass, Object... params) {
+    public <T> List<T> executeQuery(String sql, Class<T> entityClass, Object... params) {
         if (extractor == null)
             throw new UnsupportedOperationException();
         ResultSet resultSet = null;

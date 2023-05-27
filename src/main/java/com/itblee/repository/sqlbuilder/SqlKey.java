@@ -5,5 +5,5 @@ public interface SqlKey {
     String getParamName();
     Class<?> getType();
     boolean isScope();
-    boolean isMarker();
+    //boolean isMarker();
 }

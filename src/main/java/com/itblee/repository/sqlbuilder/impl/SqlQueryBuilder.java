@@ -18,7 +18,8 @@ class SqlQueryBuilder implements Serializable, SqlBuilder.Query {
     private static final long serialVersionUID = 6764670140121398972L;
 
     private final Map<SqlQuery, ?> statements;
-    private String finalQuery;
+    private int limit = -1;
+    private int offset = -1;
 
     public SqlQueryBuilder(Map<SqlQuery, ?> statements) {
         this.statements = Collections.unmodifiableMap(statements);
@@ -26,9 +27,7 @@ class SqlQueryBuilder implements Serializable, SqlBuilder.Query {
 
     @Override
     public String build() throws SQLSyntaxErrorException {
-        if (finalQuery == null)
-            finalQuery = buildQuery();
-        return finalQuery;
+        return SqlBuilder.limitAndOffset(buildQuery(), limit, offset);
     }
 
     @Override
@@ -80,6 +79,19 @@ class SqlQueryBuilder implements Serializable, SqlBuilder.Query {
     public StringBuilder buildOrderByClause() throws SQLSyntaxErrorException {
         return QueryBuilder.buildOrderByClause(statements.keySet());
     }
+
+    @Override
+    public SqlBuilder limit(int limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    @Override
+    public SqlBuilder offset(int offset) {
+        this.offset = offset;
+        return this;
+    }
+
 
     @Override
     public boolean equals(Object o) {

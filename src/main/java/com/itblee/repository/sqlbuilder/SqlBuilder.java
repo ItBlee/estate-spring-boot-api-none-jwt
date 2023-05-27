@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 public interface SqlBuilder {
     String build() throws SQLSyntaxErrorException;
+    SqlBuilder limit(int limit);
+    SqlBuilder offset(int offset);
 
     interface Query extends SqlBuilder {
         String buildQuery() throws SQLSyntaxErrorException;
@@ -52,6 +54,15 @@ public interface SqlBuilder {
         if (StringUtils.isBlank(query.getAlias()))
             throw new SQLSyntaxErrorException();
         return buildSubQuery(query, value);
+    }
+
+    static String limitAndOffset(String sql, int limit, int offset) {
+        if (limit >= 0)
+            sql += " LIMIT " + limit;
+        else return sql;
+        if (offset >= 0)
+            sql += " OFFSET " + offset;
+        return sql;
     }
 
 }

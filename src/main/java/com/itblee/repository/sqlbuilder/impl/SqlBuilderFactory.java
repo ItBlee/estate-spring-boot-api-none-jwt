@@ -25,8 +25,8 @@ public class SqlBuilderFactory {
         SqlBuilderFactory factory = new SqlBuilderFactory(statements);
         switch (action) {
             case "query":
-                SqlExtractor extractor = new ResultSetExtractor();
-                factory.executor = new SqlExecutorImpl(extractor);
+                SqlExtractor resultSetExtractor = new ResultSetExtractor();
+                factory.executor = new SqlExecutorImpl(resultSetExtractor);
                 factory.builder = factory.newQueryBuilder();
                 break;
             case "insert":
@@ -40,6 +40,11 @@ public class SqlBuilderFactory {
             case "delete":
                 factory.executor = new SqlExecutorImpl(null);
                 factory.builder = factory.newDeleteBuilder();
+                break;
+            case "count":
+                SqlExtractor countExtractor = new CountExtractor();
+                factory.executor = new SqlExecutorImpl(countExtractor);
+                factory.builder = factory.newQueryBuilder();
                 break;
             default:
                 throw new UnsupportedOperationException();

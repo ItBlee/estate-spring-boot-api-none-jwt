@@ -21,19 +21,19 @@ import java.util.*;
 public class ResultSetExtractor implements SqlExtractor {
 
     @Override
-    public <T extends BaseEntity> List<T> extractData(ResultSet resultSet, Class<T> entityClass) throws SQLException {
+    public <T> List<T> extractData(ResultSet resultSet, Class<T> tClass) throws SQLException {
         ValidateUtils.requireNonNull(resultSet);
         Map<Long, T> groupById = new HashMap<>();
         Map<Long, MappedResult> results = new LinkedHashMap<>();
         for (Map<String, Object> row : extractRows(resultSet)) {
             Long id = MapUtils.getAndCast(row, "id", Long.class)
                     .orElseThrow(() -> new SQLSyntaxErrorException("Query without ID."));
-            T instance = groupById.computeIfAbsent(id, (ThrowableFunction<Long, T>) inst -> entityClass.newInstance());
+            T instance = groupById.computeIfAbsent(id, (ThrowableFunction<Long, T>) inst -> tClass.newInstance());
             results.computeIfAbsent(id, result -> new MappedResult())
-                    .add(mapRowToEntity(instance, row));
+                    .add(mapRowToObject(instance, row));
         }
         results.forEach((id, result) -> {
-            result.setTitle(entityClass.getSimpleName() + " " + id);
+            result.setTitle(tClass.getSimpleName() + " " + id);
             result.print();
         });
         return new ArrayList<>(groupById.values());
@@ -54,16 +54,16 @@ public class ResultSetExtractor implements SqlExtractor {
         return row;
     }
 
-    private MappedResult mapRowToEntity(BaseEntity entity, Map<String, ?> row) {
+    private MappedResult mapRowToObject(Object instance, Map<String, ?> row) {
         ValidateUtils.requireNonNull(row);
-        ValidateUtils.requireNonNull(entity);
+        ValidateUtils.requireNonNull(instance);
         MappedResult results = new MappedResult();
         Map<Field, Object> childFields = new LinkedHashMap<>();
         row.forEach((ThrowableBiConsumer<String, Object>)
                 (colName, colValue) -> results.add(
-                        mapFieldIfMatchColumn(entity, colName, colValue, childFields, true)
+                        mapFieldIfMatchColumn(instance, colName, colValue, childFields, true)
                 ));
-        setFinalValueForChildFields(entity, childFields);
+        setFinalValueForChildFields(instance, childFields);
         return results;
     }
 

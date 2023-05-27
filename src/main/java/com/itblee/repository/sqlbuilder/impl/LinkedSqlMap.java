@@ -50,7 +50,7 @@ public class LinkedSqlMap<K extends SqlKey> extends ForwardingMap<SqlStatement, 
         ValidateUtils.requireNonNull(key);
         ValidateUtils.requireNonNull(value);
         try {
-            if (key.isMarker() || key.isScope())
+            if (key.isScope())
                 throw new IllegalArgumentException("Unsupported param.");
             Object cast = CastUtils.cast(value, key.getType())
                     .orElseThrow(() -> new IllegalArgumentException("Unsupported type."));
@@ -64,7 +64,7 @@ public class LinkedSqlMap<K extends SqlKey> extends ForwardingMap<SqlStatement, 
     public Range put(K key, Object from, Object to) {
         ValidateUtils.requireNonNull(key);
         try {
-            if (key.isMarker() || key.isScope())
+            if (key.isScope())
                 throw new IllegalStateException("Unsupported param.");
             Number fromNum = CastUtils.cast(from, Integer.class).orElse(null);
             Number toNum = CastUtils.cast(to, Integer.class).orElse(null);
